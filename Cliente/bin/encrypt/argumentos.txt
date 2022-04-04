@@ -1,0 +1,5 @@
+Argumentos: src/resources/prueba.zip src/resources/prueba.encrypted src/resources/desencriptado.zip src/resources/prueba.key
+1º: zip que queremos encriptar
+2º: como llamar y donde almacenar el encriptado
+3º: donde guardar el desencriptado
+4º: donde se guarda el IV la key

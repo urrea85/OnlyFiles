@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Polygon?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="490.0" prefWidth="868.0" style="-fx-background-color: #87aae0;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.fileController">
+   <children>
+      <VBox layoutY="-2.0" prefHeight="496.0" prefWidth="271.0" style="-fx-background-color: #0d4194;">
+         <children>
+            <Pane prefHeight="152.0" prefWidth="326.0">
+               <children>
+                  <Label layoutX="87.0" layoutY="49.0" prefHeight="55.0" prefWidth="182.0" text="OnlyFiles" textFill="#fafafa">
+                     <font>
+                        <Font size="38.0" />
+                     </font>
+                  </Label>
+                  <Polygon fill="DODGERBLUE" layoutX="87.0" layoutY="110.0" points="-27.20000457763672, -7.599983215332031, -49.99999237060547, -60.00000762939453, 0.0, -60.0" stroke="BLACK" strokeType="INSIDE" />
+               </children>
+            </Pane>
+            <Button mnemonicParsing="false" onAction="#setFolder" prefHeight="54.0" prefWidth="326.0" text="Select Folder" />
+            <Button mnemonicParsing="false" onAction="#switchToNewFile" prefHeight="54.0" prefWidth="331.0" text="New" />
+            <Button mnemonicParsing="false" onAction="#refreshList" prefHeight="54.0" prefWidth="340.0" text="Refresh List" />
+         </children>
+      </VBox>
+      <ListView fx:id="listView" layoutX="307.0" layoutY="18.0" prefHeight="458.0" prefWidth="530.0" style="-fx-background-color: #bbd0f2;" />
+   </children>
+</AnchorPane>
