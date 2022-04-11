@@ -44,6 +44,23 @@ public class AES {
 		System.out.println("Desencriptado.");
 	}
 	
+	public static String encryptPassword(String input, SecretKey key, IvParameterSpec iv) throws Exception{
+			String algorithm = "AES/CBC/PKCS5Padding";
+		    Cipher cipher = Cipher.getInstance(algorithm);
+		    cipher.init(Cipher.ENCRYPT_MODE, key, iv);
+		    byte[] cipherText = cipher.doFinal(input.getBytes());
+		    return Base64.getEncoder()
+		        .encodeToString(cipherText);
+		}
+	public static String decryptPassword(String cipherText, SecretKey key,IvParameterSpec iv) throws Exception {
+			String algorithm = "AES/CBC/PKCS5Padding";
+		    Cipher cipher = Cipher.getInstance(algorithm);
+		    cipher.init(Cipher.DECRYPT_MODE, key, iv);
+		    byte[] plainText = cipher.doFinal(Base64.getDecoder()
+		        .decode(cipherText));
+		    return new String(plainText);
+		}
+	
 	public void encryptController(String zipPath) throws Exception{
 		SecretKey key = generateKey(128);
 

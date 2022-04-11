@@ -1,10 +1,24 @@
 package main;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.KeySpec;
 import java.util.Random;
 
-public class Main {
+import javax.crypto.*;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
 
+
+import encrypt.AES;
+
+public class Main {
+	
+	private static String password;
 	private static String Klogin, Kdatos;
+	private static byte[] salt;
 	
 	public static String generatePassword(int length, boolean m, boolean M, boolean e, boolean n) {
 		String mayus, minus, especiales, numeros, total="", resultado="";
@@ -65,18 +79,84 @@ public class Main {
 	}
 		
 	public static void dividePassword(String password) {
-		System.out.println(password);
 		final int mid = password.length()/2;
 		Klogin = password.substring(0,mid);
 		Kdatos = password.substring(mid);
-		System.out.println("Klogin= " + Klogin);
-		System.out.println("Kdatos= " + Kdatos);
 	}
 	
-	public static void main(String[] args) {
-		String password = generatePassword(64,true,true,true,true);
-		dividePassword(password);
+	public static String calculateKlogin(String password) {
+		final int mid = password.length()/2;
+		return password.substring(0,mid);
+	}
+	
+	public static String calculateKdatos(String password) {
+		final int mid = password.length()/2;
+		return password.substring(mid);
+	}
+	
+	public static byte[] generateSalt() {
+		byte[] salt2 = new byte[100];
+	    SecureRandom random = new SecureRandom();
+	    random.nextBytes(salt2);
+	    salt = salt2;
+	    return salt2;
+	}
+	
+	public static SecretKey hashPassword(String password, byte[] salt) throws Exception{
+		    
+		    SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+		    
+		    KeySpec spec = new PBEKeySpec(password.toCharArray(),salt, 65536, 256);
+		    SecretKey secret = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
+		    return secret;
+		}
+	
+	public static boolean validPassword(String password, String passEncrypt, byte[] sal, IvParameterSpec iv) throws Exception {
+		String Klog = calculateKlogin(password);
+		String Kdata = calculateKdatos(password);
+		SecretKey KlogHash = hashPassword(Klog, sal);
+		SecretKey KdataHash = hashPassword(Kdata, sal);
+		String passLogEncrypt = AES.encryptPassword(AES.convertSecretKeyToString(KlogHash), KdataHash, iv);
+
+		if(passLogEncrypt.equals(passEncrypt))
+			return true;
+		else
+			return false;
+	}
+	
+	public static void main(String[] args) throws Exception {
+		password = generatePassword(64,true,true,true,true);
 		isGoodPasswd("Password1234@");
+		dividePassword(password);
+
+		System.out.println("Generated password: " + password);
+		System.out.println("Klogin= " + Klogin);
+		System.out.println("Kdatos= " + Kdatos);
+
+		generateSalt();
+		SecretKey KloginHashed = hashPassword(Klogin,salt);
+		SecretKey KdatosHashed = hashPassword(Kdatos,salt);
+		String KloginH = AES.convertSecretKeyToString(KloginHashed);
+		String KdatosH = AES.convertSecretKeyToString(KdatosHashed);
+		System.out.println("Klogin hashed: " + KloginH + " length: " + KloginH.length());
+		System.out.println("KDatos hashed: " + KdatosH + " length: " + KdatosH.length());
+
+		try {
+			IvParameterSpec iv = AES.generateIv("password.iv");
+			String KloginEncrypt = AES.encryptPassword(AES.convertSecretKeyToString(KloginHashed),KdatosHashed,iv);
+			String KloginDecrypt = AES.decryptPassword(KloginEncrypt,KdatosHashed,iv);
+			System.out.println("Klogin Encrypted: " + KloginEncrypt + " length: " + KloginEncrypt.length());
+			System.out.println("Klogin Decrypted: " + KloginDecrypt);
+			
+			if(validPassword(password, KloginEncrypt, salt, iv))
+				System.out.println("Contraseña válida");
+			else
+				System.out.println("Contraseña inválida");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//Debemos pasar la Klogin al servidor y la Kdatos también
 		//Reto propuesto: restringir uso de password a 1 mes y 2FA
 	}
 }
