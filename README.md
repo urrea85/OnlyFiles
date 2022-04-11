@@ -1,6 +1,6 @@
 # OnlyFiles
 
-###How to run
+### How to run
 
 > 1. Configure BuildPath -> Add Library -> User Library -> JavaFX17 <br/>
 > 2. Configure BuildPath -> Add External Jars -> json-simple-1.1.1.jar <br/>
