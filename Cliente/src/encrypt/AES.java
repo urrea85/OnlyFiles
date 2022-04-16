@@ -15,6 +15,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Arrays;
 import java.util.Base64;
 
 import javax.crypto.BadPaddingException;
@@ -130,9 +131,14 @@ public class AES {
 	
 	public static IvParameterSpec generateIv(String file) throws IOException {
 		byte[] iv = new byte[16];
-		saveIV(iv, file);
+		//saveIV(iv, file);
+		//System.out.println("IV");
+		//System.out.println(Arrays.toString(iv));
 		new SecureRandom().nextBytes(iv);
-		return new IvParameterSpec(iv);
+		IvParameterSpec iV = new IvParameterSpec(iv);
+		byte[] ivFinal = iV.getIV();
+		saveIV(ivFinal,file);
+		return iV;
 	}
 	
 	
@@ -152,7 +158,7 @@ public class AES {
 		if(dis != null) {
 			dis.close();
 		}
-		new SecureRandom().nextBytes(iv);
+		//new SecureRandom().nextBytes(iv);
 		return new IvParameterSpec(iv);
 	}
 	
