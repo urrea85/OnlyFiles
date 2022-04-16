@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Polygon?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="426.0" prefWidth="702.0" style="-fx-background-color: #87aae0;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.loginController">
+   <children>
+      <VBox prefHeight="450.0" prefWidth="237.0" style="-fx-background-color: #0d4194;">
+         <children>
+            <Pane prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <Polygon fill="DODGERBLUE" layoutX="61.0" layoutY="112.0" points="-27.20000457763672, -7.599983215332031, -49.99999237060547, -60.00000762939453, 0.0, -60.0" stroke="BLACK" strokeType="INSIDE" />
+                  <Label layoutX="73.0" layoutY="51.0" prefHeight="55.0" prefWidth="182.0" text="OnlyFiles" textFill="#fafafa">
+                     <font>
+                        <Font size="38.0" />
+                     </font>
+                  </Label>
+               </children>
+            </Pane>
+            <Button mnemonicParsing="false" onAction="#login" prefHeight="55.0" prefWidth="246.0" text="Login">
+               <font>
+                  <Font size="25.0" />
+               </font>
+            </Button>
+            <Button mnemonicParsing="false" onAction="#switchToRegister" prefHeight="55.0" prefWidth="246.0" text="Register">
+               <font>
+                  <Font size="25.0" />
+               </font>
+            </Button>
+         </children>
+      </VBox>
+      <TextField fx:id="nicknameTextField" layoutX="275.0" layoutY="130.0" prefHeight="52.0" prefWidth="394.0">
+         <font>
+            <Font size="25.0" />
+         </font>
+      </TextField>
+      <TextField fx:id="passwordTextField" layoutX="275.0" layoutY="281.0" prefHeight="52.0" prefWidth="394.0">
+         <font>
+            <Font size="25.0" />
+         </font>
+      </TextField>
+      <Label layoutX="275.0" layoutY="74.0" prefHeight="55.0" prefWidth="182.0" text="Nickname:" textFill="#fafafa">
+         <font>
+            <Font size="26.0" />
+         </font>
+      </Label>
+      <Label layoutX="274.0" layoutY="225.0" prefHeight="55.0" prefWidth="182.0" text="Password:" textFill="#fafafa">
+         <font>
+            <Font size="26.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>

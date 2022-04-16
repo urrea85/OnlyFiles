@@ -12,6 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import main.Main;
+import serverConnection.ServerConnection;
 
 public class registerController {
 	
@@ -46,7 +47,7 @@ public class registerController {
 	public Boolean confirmPassword() {
 		boolean result = true;
 		
-		if(passwordTextField.getText() != confirmPasswordTextField.getText()) {
+		if(!passwordTextField.getText().equals(confirmPasswordTextField.getText())) {
 			result = false;
 		}
 		
@@ -61,7 +62,14 @@ public class registerController {
 				String nick = nicknameTextField.getText();
 				String password = passwordTextField.getText();
 				
-				//Conexion a server
+				try {
+					ServerConnection.register(nick,password);
+					
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+
 			}
 			else {
 				errorLabel.setText("Passwords must be equal");

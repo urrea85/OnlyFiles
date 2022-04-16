@@ -87,8 +87,8 @@ public class Server {
 	        System.setProperty("javax.net.ssl.trustStore", "certs/serverTrustedCerts.jks");
 	        System.setProperty("javax.net.ssl.trustStorePassword", "servpass");*/
 			//C:\Users\alexp\OneDrive\Escritorio\Socket\Server\src\certs
-			String keyPath = "src\\certs\\serverStore.jks", 
-				   trustPath = "src\\certs\\serverTrustedCerts.jks",
+			String keyPath = "src\\certs\\serverKey.jks", 
+				   trustPath = "src\\certs\\serverTrustedNewCerts.jks",
 				   pass = "servpass";
 			getCerts(keyPath, trustPath, pass);
 			

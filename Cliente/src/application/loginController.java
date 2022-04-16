@@ -10,6 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import serverConnection.ServerConnection;
 
 public class loginController {
 	
@@ -24,6 +25,18 @@ public class loginController {
 	private Parent root;
 	
 	public void login(ActionEvent e) {
+		
+		String user = nicknameTextField.getText();
+		String password = passwordTextField.getText();
+		
+		try {
+			ServerConnection.login(user,password);
+			
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
 		
 	}	
 

@@ -1,9 +1,15 @@
 package main;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.KeySpec;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.Random;
 
 import javax.crypto.*;
@@ -13,6 +19,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 
 import encrypt.AES;
+import serverConnection.ServerConnection;
 
 public class Main {
 	
@@ -94,13 +101,57 @@ public class Main {
 		return password.substring(mid);
 	}
 	
-	public static byte[] generateSalt() {
+	public static byte[] generateSalt() throws Exception {
 		byte[] salt2 = new byte[100];
 	    SecureRandom random = new SecureRandom();
 	    random.nextBytes(salt2);
 	    salt = salt2;
+		writeByte(salt);
 	    return salt2;
 	}
+	
+    public static byte[] readByte(File file)
+            throws Exception
+        {
+     
+            // Creating an object of FileInputStream to
+            // read from a file
+            FileInputStream fl = new FileInputStream(file);
+     
+            // Now creating byte array of same length as file
+            byte[] arr = new byte[100];
+     
+            // Reading file content to byte array
+            // using standard read() method
+            fl.read(arr);
+     
+            // lastly closing an instance of file input stream
+            // to avoid memory leakage
+            fl.close();
+     
+            // Returning above byte array
+            return arr;
+        }
+	 // Method which write the bytes into a file
+    static void writeByte(byte[] bytes)
+    {
+        try {
+  
+            // Initialize a pointer
+            // in file using OutputStream
+            OutputStream os = new FileOutputStream("salt");
+  
+            // Starts writing the bytes in it
+            os.write(bytes);
+            System.out.println("Successfully"+ " byte inserted");
+            // Close the file
+            os.close();
+        }
+  
+        catch (Exception e) {
+            System.out.println("Exception: " + e);
+        }
+    }
 	
 	public static SecretKey hashPassword(String password, byte[] salt) throws Exception{
 		    
@@ -124,6 +175,35 @@ public class Main {
 			return false;
 	}
 	
+	public static String register(String user, String password, byte[] sal, IvParameterSpec iv) throws Exception {
+		
+		dividePassword(password);
+		SecretKey KloginHashed = hashPassword(Klogin,sal);
+		SecretKey KdatosHashed = hashPassword(Kdatos,sal);
+		System.out.println(AES.convertSecretKeyToString(KloginHashed));
+		System.out.println(AES.convertSecretKeyToString(KdatosHashed));
+		String KloginEncrypt = AES.encryptPassword(AES.convertSecretKeyToString(KloginHashed),KdatosHashed,iv);
+		System.out.println(KloginEncrypt);
+		
+		String all = salt.toString() + iv.toString() + KloginEncrypt;
+		return KloginEncrypt;	
+	}
+	
+	public static String login(String user,String password,byte[] sal, IvParameterSpec iv) throws Exception {
+		
+		dividePassword(password);
+		SecretKey KloginHashed = hashPassword(Klogin,sal);
+		SecretKey KdatosHashed = hashPassword(Kdatos,sal);
+		System.out.println(AES.convertSecretKeyToString(KloginHashed));
+		System.out.println(AES.convertSecretKeyToString(KdatosHashed));
+
+		String KloginEncrypt = AES.encryptPassword(AES.convertSecretKeyToString(KloginHashed),KdatosHashed,iv);
+		System.out.println(KloginEncrypt);
+		return KloginEncrypt;
+		
+		//System.out.println(closeConnection());
+	}
+	
 	public static void main(String[] args) throws Exception {
 		password = generatePassword(64,true,true,true,true);
 		isGoodPasswd("Password1234@");
@@ -136,11 +216,12 @@ public class Main {
 		generateSalt();
 		SecretKey KloginHashed = hashPassword(Klogin,salt);
 		SecretKey KdatosHashed = hashPassword(Kdatos,salt);
+		
 		String KloginH = AES.convertSecretKeyToString(KloginHashed);
 		String KdatosH = AES.convertSecretKeyToString(KdatosHashed);
 		System.out.println("Klogin hashed: " + KloginH + " length: " + KloginH.length());
 		System.out.println("KDatos hashed: " + KdatosH + " length: " + KdatosH.length());
-
+		
 		try {
 			IvParameterSpec iv = AES.generateIv("password.iv");
 			String KloginEncrypt = AES.encryptPassword(AES.convertSecretKeyToString(KloginHashed),KdatosHashed,iv);
@@ -152,6 +233,8 @@ public class Main {
 				System.out.println("Contraseña válida");
 			else
 				System.out.println("Contraseña inválida");
+			
+			System.out.println("usu");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

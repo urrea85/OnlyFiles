@@ -62,7 +62,7 @@ public class AES {
 		}
 	
 	public void encryptController(String zipPath) throws Exception{
-		SecretKey key = generateKey(128);
+		SecretKey key = generateKey(128); 
 
 		String algorithm = "AES/CBC/PKCS5Padding";
 		IvParameterSpec ivParameterSpec = generateIv(zipPath.replace(".zip", ".iv"));
