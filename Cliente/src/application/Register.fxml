@@ -6,8 +6,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="518.0" prefWidth="472.0" style="-fx-background-color: #87aae0;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="518.0" prefWidth="472.0" style="-fx-background-color: #87aae0;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.registerController">
    <children>
       <Label layoutX="34.0" layoutY="158.0" prefHeight="42.0" prefWidth="130.0" text="Password:" textFill="#fafafa">
          <font>
@@ -19,14 +18,14 @@
             <Font size="34.0" />
          </font>
       </Label>
-      <TextField layoutX="34.0" layoutY="106.0" prefHeight="26.0" prefWidth="386.0" />
-      <TextField layoutX="34.0" layoutY="200.0" prefHeight="26.0" prefWidth="386.0" />
+      <TextField fx:id="nicknameTextField" layoutX="34.0" layoutY="119.0" prefHeight="26.0" prefWidth="386.0" />
+      <TextField fx:id="passwordTextField" layoutX="34.0" layoutY="200.0" prefHeight="26.0" prefWidth="386.0" />
       <Label layoutX="34.0" layoutY="64.0" prefHeight="42.0" prefWidth="130.0" text="Nickname:" textFill="#fafafa">
          <font>
             <Font size="24.0" />
          </font>
       </Label>
-      <TextField layoutX="34.0" layoutY="280.0" prefHeight="26.0" prefWidth="386.0" />
+      <TextField fx:id="confirmPasswordTextField" layoutX="34.0" layoutY="280.0" prefHeight="26.0" prefWidth="386.0" />
       <Label layoutX="34.0" layoutY="238.0" prefHeight="42.0" prefWidth="221.0" text="Confirm Password:" textFill="#fafafa">
          <font>
             <Font size="24.0" />
@@ -37,16 +36,21 @@
             <Font size="24.0" />
          </font>
       </Label>
-      <Button layoutX="342.0" layoutY="327.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="86.0" text="Generate" />
-      <Button layoutX="171.0" layoutY="382.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="130.0" text="Register">
+      <Button layoutX="342.0" layoutY="327.0" mnemonicParsing="false" onAction="#generatePassword" prefHeight="26.0" prefWidth="86.0" text="Generate" />
+      <Button layoutX="73.0" layoutY="400.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="130.0" text="Register">
          <font>
             <Font size="19.0" />
          </font>
       </Button>
-      <Button layoutX="171.0" layoutY="444.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="130.0" text="Cancel">
+      <Button layoutX="248.0" layoutY="400.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="130.0" text="Cancel">
          <font>
             <Font size="19.0" />
          </font>
       </Button>
+      <Label fx:id="errorLabel" layoutX="14.0" layoutY="468.0" prefHeight="42.0" prefWidth="436.0" textFill="#fafafa">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Label>
    </children>
 </AnchorPane>
