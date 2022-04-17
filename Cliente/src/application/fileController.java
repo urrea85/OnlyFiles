@@ -15,6 +15,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
@@ -23,6 +24,15 @@ public class fileController implements Initializable{
 	
 	@FXML
 	private ListView<String> listView;
+	
+	@FXML
+	private ListView<String> serverFiles;
+	
+	@FXML
+	private Label serverInfoLabel;
+	
+	@FXML
+	private Label localInfoLabel;
 		
 	private Stage stage;
 	private Scene scene;
@@ -61,10 +71,24 @@ public class fileController implements Initializable{
 					compressedFiles.add(file);
 					
 					listView.getItems().addAll(file.getName());
-					listView.setCellFactory(param -> new Cell(file.getAbsolutePath()));
+					listView.setCellFactory(param -> new Cell(file.getAbsolutePath(), true));
 				}
 				
 			}
+		}
+		
+		localInfoLabel.setText(dirPath);
+		
+	}
+	
+	public void updateServerView(String files) {
+		
+		String[] remoteFiles = files.split(" ");
+		
+		for(String file: remoteFiles) {
+			
+			serverFiles.getItems().addAll(file);
+			serverFiles.setCellFactory(param -> new Cell("Server file", false));
 		}
 		
 	}
@@ -73,12 +97,24 @@ public class fileController implements Initializable{
 	public void initialize(URL url, ResourceBundle rb) {
 		
 		if(Data.dirPath == "") {
+			localInfoLabel.setText("Select a folder");
 			System.out.println(dirPath);
 		}
 		else {
 			this.dirPath = Data.dirPath;
 			
 			updateListView(dirPath);
+
+		}
+		
+		if(Data.serverFiles == "") {
+			serverInfoLabel.setText("No files found");
+			System.out.println(dirPath);
+		}
+		else {
+			serverInfoLabel.setText("");
+			
+			updateServerView(Data.serverFiles);
 		}
 		
 	}
