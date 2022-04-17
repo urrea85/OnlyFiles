@@ -18,25 +18,38 @@ class Cell extends ListCell<String> {
 	
 	HBox hbox = new HBox();
 	Button metaViewBtn = new Button("View Metadata");
-	Button uploadBtn = new Button("Download");
+	Button uploadBtn = new Button("Upload");
+	Button downloadBtn = new Button("Download");
 	Button decryptBtn = new Button("Decrypt");
 	Button deleteBtn = new Button("Delete");
 	Label label = new Label("");
 	Pane pane = new Pane();
 	
-	public Cell(String directory) {
+	public Cell(String directory, boolean local) {
 		super();
 		
-		this.directory = directory;
-		hbox.getChildren().addAll(label,pane,uploadBtn,metaViewBtn,decryptBtn,deleteBtn);
-		hbox.setHgrow(pane, Priority.ALWAYS);
+		if(local) {
+			this.directory = directory;
+			hbox.getChildren().addAll(label,pane,uploadBtn,metaViewBtn,decryptBtn,deleteBtn);
+			hbox.setHgrow(pane, Priority.ALWAYS);
 
-		
+			
 
-		deleteBtn.setOnAction(e ->  deleteFile(this.directory));
-		metaViewBtn.setOnAction(e -> viewMetaData(this.directory));
-		decryptBtn.setOnAction(e -> decryptEnc(this.directory));
-		uploadBtn.setOnAction(e -> downloadData(this.directory));
+			deleteBtn.setOnAction(e ->  deleteFile(this.directory));
+			metaViewBtn.setOnAction(e -> viewMetaData(this.directory));
+			decryptBtn.setOnAction(e -> decryptEnc(this.directory));
+			uploadBtn.setOnAction(e -> uploadData(this.directory));
+		}
+		else {
+			this.directory = directory;
+			hbox.getChildren().addAll(label,pane,downloadBtn,deleteBtn);
+			hbox.setHgrow(pane, Priority.ALWAYS);
+
+			
+
+			deleteBtn.setOnAction(e ->  deleteFileServer());
+			uploadBtn.setOnAction(e -> downloadData(this.directory));
+		}
 	}
 	
 	public void updateItem(String name, boolean empty) {
@@ -52,6 +65,10 @@ class Cell extends ListCell<String> {
 	}
 	
 	public void downloadData(String path) {
+
+	}
+	
+	public void uploadData(String path) {
 
 	}
 	
@@ -90,6 +107,10 @@ class Cell extends ListCell<String> {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public void deleteFileServer() {
+		
 	}
 	
 }
