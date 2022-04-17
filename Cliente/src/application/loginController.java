@@ -37,6 +37,8 @@ public class loginController {
 			if(ServerConnection.login(user,password)) {
 				System.out.println("Welcome");
 				Data.username = user;
+				Data.serverFiles = ServerConnection.listFiles(user);
+				System.out.println(Data.serverFiles);
 				switchToMain(e);
 			}else {
 				System.out.println("Invalid credentials, try it again!");

@@ -52,6 +52,7 @@ public class newFileController implements Initializable{
 	
 	private List<File> selectedFiles;
 	private String dirPath;
+	private String username;
 	private File directory;
 	private File[] files;
 	
@@ -62,6 +63,7 @@ public class newFileController implements Initializable{
 		
 		this.dirPath = Data.dirPath;
 		directory = new File(dirPath);
+		this.username = Data.username;
 				
 	}
 	
@@ -125,7 +127,7 @@ public class newFileController implements Initializable{
 		try {
 			compress.zip(paths, zipName);
 			aes.encryptController(zipName);
-			
+			upload(fileName);
 			Parent root = FXMLLoader.load(getClass().getResource("Main.fxml"));
 
 			stage = (Stage) ((Node)e.getSource()).getScene().getWindow();
@@ -139,9 +141,9 @@ public class newFileController implements Initializable{
 		
 	}
 	
-	public void upload() {
+	public void upload(String zipName) {
 		
-		if (ServerConnection.uploadFiles(dirPath))
+		if (ServerConnection.uploadFiles(dirPath,username, zipName))
 			System.out.println("Upload succesfuly");
 		else
 			System.out.println("Error uploading");

@@ -52,7 +52,11 @@ class Cell extends ListCell<String> {
 	}
 	
 	public void downloadData(String path) {
-
+		System.out.println(path);
+		/*if (ServerConnection.downloadFiles(dirPath,username, zipName))
+			System.out.println("Upload succesfuly");
+		else
+			System.out.println("Error uploading");*/
 	}
 	
 	public void viewMetaData(String path) {

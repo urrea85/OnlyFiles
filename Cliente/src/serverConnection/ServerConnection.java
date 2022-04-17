@@ -40,6 +40,7 @@ import main.Main;
 import javax.crypto.spec.IvParameterSpec;
 import javax.net.ssl.*;
 
+//CWy/}{=2s27NuMBa3ñ!Kf!VDVCjEjQT&kEg#o-SMWGZCAoZ[OodXU*R4Ctsp67Qz
 public class ServerConnection {
 	private static SSLSocket skServidor;
 	private static String host = "127.0.0.1";
@@ -141,21 +142,31 @@ public class ServerConnection {
 		return result;
 	}
 	
-	public static void listFiles() {
-		
+	public static String listFiles(String user) {
+		String result = "";
+		boolean connected = establishConnection();			
+		if(connected) {
+			try {
+				writeSocket(skServidor,"list " + user);
+				result = readSocket(skServidor, "");
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return result;
 	}
 	
-	public static boolean downloadFiles(String path) {
+	public static boolean downloadFiles(String path, String user, String name) {
 		boolean result = false;
 		System.out.println(path);
 		boolean connected = establishConnection();			
 		if(connected) {
 			try {
-				writeSocket(skServidor,"download");
-				readFileSocket(skServidor,path.replace(".encrypt", "meta.json"));
-				readFileSocket(skServidor,path.replace(".encrypt", ".iv"));
-				readFileSocket(skServidor,path.replace(".encrypt", ".key"));
-				readFileSocket(skServidor,path);
+				writeSocket(skServidor,"download " + user + " " + name);
+				readFileSocket(skServidor,path + File.separator + name +".iv");
+				readFileSocket(skServidor,path + File.separator + name +".key");
+				readFileSocket(skServidor,path + File.separator + name +".encrypt");
 				result = true;
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -165,15 +176,18 @@ public class ServerConnection {
 		return result;
 	}
 	
-	public static boolean uploadFiles(String path) {
+	public static boolean uploadFiles(String path, String user, String name) {
 		
 		boolean result = false;
 		System.out.println(path);
 		boolean connected = establishConnection();			
 		if(connected) {
 			try {
-				writeSocket(skServidor,"upload " + "chamo");
-				writeFileSocket(skServidor,path);
+				//Falta enviar iv y key encriptados con Kdata
+				writeSocket(skServidor,"upload " + user + " " + name);
+				writeFileSocket(skServidor,path + File.separator + name +".iv");
+				writeFileSocket(skServidor,path + File.separator + name +".key");
+				writeFileSocket(skServidor,path + File.separator + name +".encrypt");
 				result = true;
 			} catch (Exception e) {
 				// TODO Auto-generated catch block

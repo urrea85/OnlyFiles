@@ -130,6 +130,27 @@ public class ServerThread extends Thread{
 		return salt;
 	}
 	
+	public static String userFiles(String user) {
+		
+		String files ="";
+		
+		File dir = new File(path+user);
+		String[] ficheros = dir.list();
+		
+		if (ficheros == null)
+			  System.out.println("No hay ficheros en el directorio especificado");
+		else { 
+		  for (int x=0;x<ficheros.length;x++) {
+		    if(ficheros[x].contains(".encrypt")) {
+			    files += ficheros[x] + " ";
+		    }
+		  }
+		}
+		System.out.println("Estos son los ficheros: " + files);
+		
+		return files;
+	}
+	
     @Override
     public void run() {
         int resultado = 0;
@@ -171,12 +192,28 @@ public class ServerThread extends Thread{
                     	resultado = -1;
                 	}  	
             	}else if(log.equals("upload")){
+            		System.out.println(peticion);
             		String user = peticion.split(" ")[1];
-            		readFileSocket(skCliente, path+ user + File.separator + ".enc");
-            	}else if(peticion.equals("download")) {
-            		System.out.println("Not implemented");
+            		String name = peticion.split(" ")[2];
+            		readFileSocket(skCliente, path+ user + File.separator + name + ".iv");
+            		readFileSocket(skCliente, path+ user + File.separator + name +".key");
+            		readFileSocket(skCliente, path+ user + File.separator + name + ".encrypt");
+            		resultado = -1;
+            	}else if(log.equals("download")) {
+               		String user = peticion.split(" ")[1];
+            		String name = peticion.split(" ")[2];
+            		writeFileSocket(skCliente, path+ user + File.separator + name + ".iv");
+            		writeFileSocket(skCliente, path+ user + File.separator + name +".key");
+            		writeFileSocket(skCliente, path+ user + File.separator + name + ".encrypt");
+            		resultado = -1;
+            	}else if(log.equals("list")){
+            		String user = peticion.split(" ")[1];
+            		String files = userFiles(user);//funcion para pasar string de nombre zips
+            		writeSocket(skCliente,files);
+            		resultado = -1;
             	}else {
             		System.out.println("Invalid Request");
+            		resultado = -1;
             	}
             	
             }

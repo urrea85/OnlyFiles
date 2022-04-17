@@ -66,6 +66,8 @@ public class registerController {
 					if( ServerConnection.register(nick,password)) {
 						System.out.println("Welcome");
 						Data.username = nick;
+						Data.serverFiles = ServerConnection.listFiles(nick);
+						System.out.println(Data.serverFiles);
 						switchToMain(e);
 					}else {
 						System.out.println("Cannot Register, try it again!");
