@@ -14,11 +14,10 @@ import serverConnection.ServerConnection;
 class Cell extends ListCell<String> {
 	
 	private String directory;
-	//private String name;
+	private String name;
 	
 	HBox hbox = new HBox();
 	Button metaViewBtn = new Button("View Metadata");
-	Button uploadBtn = new Button("Upload");
 	Button downloadBtn = new Button("Download");
 	Button decryptBtn = new Button("Decrypt");
 	Button deleteBtn = new Button("Delete");
@@ -30,7 +29,7 @@ class Cell extends ListCell<String> {
 		
 		if(local) {
 			this.directory = directory;
-			hbox.getChildren().addAll(label,pane,uploadBtn,metaViewBtn,decryptBtn,deleteBtn);
+			hbox.getChildren().addAll(label,pane,metaViewBtn,decryptBtn,deleteBtn);
 			hbox.setHgrow(pane, Priority.ALWAYS);
 
 			
@@ -38,17 +37,18 @@ class Cell extends ListCell<String> {
 			deleteBtn.setOnAction(e ->  deleteFile(this.directory));
 			metaViewBtn.setOnAction(e -> viewMetaData(this.directory));
 			decryptBtn.setOnAction(e -> decryptEnc(this.directory));
-			uploadBtn.setOnAction(e -> uploadData(this.directory));
 		}
 		else {
 			this.directory = directory;
+			this.name = directory;
+			System.out.println("asignando "  + this.name);
 			hbox.getChildren().addAll(label,pane,downloadBtn,deleteBtn);
 			hbox.setHgrow(pane, Priority.ALWAYS);
 
 			
 
 			deleteBtn.setOnAction(e ->  deleteFileServer());
-			uploadBtn.setOnAction(e -> downloadData(this.directory));
+			downloadBtn.setOnAction(e -> downloadData(this.directory));
 		}
 	}
 	
@@ -66,14 +66,10 @@ class Cell extends ListCell<String> {
 	
 	public void downloadData(String path) {
 		System.out.println(path);
-		/*if (ServerConnection.downloadFiles(dirPath,username, zipName))
+		/*if (ServerConnection.downloadFiles(path,username, zipName))
 			System.out.println("Upload succesfuly");
 		else
 			System.out.println("Error uploading");*/
-	}
-	
-	public void uploadData(String path) {
-
 	}
 	
 	public void viewMetaData(String path) {

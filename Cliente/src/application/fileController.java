@@ -86,9 +86,8 @@ public class fileController implements Initializable{
 		String[] remoteFiles = files.split(" ");
 		
 		for(String file: remoteFiles) {
-			
 			serverFiles.getItems().addAll(file);
-			serverFiles.setCellFactory(param -> new Cell("Server file", false));
+			serverFiles.setCellFactory(param -> new Cell(file, false));
 		}
 		
 	}
