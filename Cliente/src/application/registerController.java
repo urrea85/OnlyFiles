@@ -63,7 +63,12 @@ public class registerController {
 				String password = passwordTextField.getText();
 				
 				try {
-					ServerConnection.register(nick,password);
+					if( ServerConnection.register(nick,password)) {
+						System.out.println("Welcome");
+						switchToMain(e);
+					}else {
+						System.out.println("Cannot Register, try it again!");
+					}
 					
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
@@ -101,6 +106,21 @@ public class registerController {
 		stage.setScene(scene);
 		stage.show();
 		
+	}
+	
+	public void switchToMain(ActionEvent event) throws IOException {
+		
+		Parent root = FXMLLoader.load(getClass().getResource("Main.fxml"));
+		stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+		Scene scene = new Scene(root);
+		stage.setScene(scene);
+		stage.show();
+		
+		/*Parent root = FXMLLoader.load(getClass().getResource("Main.fxml"));
+		Scene scene = new Scene(root);
+		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+		primaryStage.setScene(scene);
+		primaryStage.show();*/
 	}
 	
 }

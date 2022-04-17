@@ -91,8 +91,9 @@ public class ServerConnection {
 				String KloginEncrypt = Main.login(user, password, salt, iv);
 				writeSocket(skServidor,user+" "+KloginEncrypt);
 				String valido = readSocket(skServidor, "");
+				System.out.println("Aqui estoy");
 				System.out.println(valido);
-				if(valido.equals("Registered")) { //salt es correcto, falta iv
+				if(valido.equals("Valid")) { 
 					result = true;
 				}else {
 					result = false;
@@ -123,6 +124,8 @@ public class ServerConnection {
 				writeFileSocket(skServidor,"salt");
 				writeFileSocket(skServidor,"password.iv");
 				String valido = readSocket(skServidor, "");
+				System.out.println("Aqui estoy");
+
 				System.out.println(valido);
 				if(valido.equals("Registered")) {
 					result = true;

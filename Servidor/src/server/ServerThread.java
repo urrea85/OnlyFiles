@@ -159,10 +159,12 @@ public class ServerThread extends Thread{
             		String register = readSocket(skCliente, "");
      
                 	if(!isNewUser(register)) {
-                		writeSocket(skCliente, "Creating new user");
+                		//writeSocket(skCliente, "Creating new user");
                 		newUser(register);
                 		readFileSocket(skCliente, path + register.split(" ")[0] + File.separator + "salt");
                 		readFileSocket(skCliente, path + register.split(" ")[0] + File.separator + "Kdata.iv");
+                		writeSocket(skCliente, "Registered");
+
                     	resultado = -1;
                 	}else {
                 		writeSocket(skCliente, "User Already Exists");

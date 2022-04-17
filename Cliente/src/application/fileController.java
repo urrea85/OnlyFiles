@@ -111,6 +111,16 @@ public class fileController implements Initializable{
 	public void refreshList(ActionEvent event) {
 		
 	}
+	
+	public void logout(ActionEvent event) throws IOException {
+		
+		Parent root = FXMLLoader.load(getClass().getResource("Login.fxml"));
+
+		stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+		Scene scene = new Scene(root);
+		stage.setScene(scene);
+		stage.show();
+	}
 
 
 }
