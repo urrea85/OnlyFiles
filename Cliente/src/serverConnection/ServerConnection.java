@@ -141,6 +141,48 @@ public class ServerConnection {
 		return result;
 	}
 	
+	public static void listFiles() {
+		
+	}
+	
+	public static boolean downloadFiles(String path) {
+		boolean result = false;
+		System.out.println(path);
+		boolean connected = establishConnection();			
+		if(connected) {
+			try {
+				writeSocket(skServidor,"download");
+				readFileSocket(skServidor,path.replace(".encrypt", "meta.json"));
+				readFileSocket(skServidor,path.replace(".encrypt", ".iv"));
+				readFileSocket(skServidor,path.replace(".encrypt", ".key"));
+				readFileSocket(skServidor,path);
+				result = true;
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
+	
+	public static boolean uploadFiles(String path) {
+		
+		boolean result = false;
+		System.out.println(path);
+		boolean connected = establishConnection();			
+		if(connected) {
+			try {
+				writeSocket(skServidor,"upload " + "chamo");
+				writeFileSocket(skServidor,path);
+				result = true;
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
+	
 	public static SSLSocket getSkServidor() {
 		return skServidor;
 	}

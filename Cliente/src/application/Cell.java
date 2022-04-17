@@ -9,6 +9,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import serverConnection.ServerConnection;
 
 class Cell extends ListCell<String> {
 	
@@ -17,6 +18,7 @@ class Cell extends ListCell<String> {
 	
 	HBox hbox = new HBox();
 	Button metaViewBtn = new Button("View Metadata");
+	Button uploadBtn = new Button("Download");
 	Button decryptBtn = new Button("Decrypt");
 	Button deleteBtn = new Button("Delete");
 	Label label = new Label("");
@@ -26,7 +28,7 @@ class Cell extends ListCell<String> {
 		super();
 		
 		this.directory = directory;
-		hbox.getChildren().addAll(label,pane,metaViewBtn,decryptBtn,deleteBtn);
+		hbox.getChildren().addAll(label,pane,uploadBtn,metaViewBtn,decryptBtn,deleteBtn);
 		hbox.setHgrow(pane, Priority.ALWAYS);
 
 		
@@ -34,7 +36,7 @@ class Cell extends ListCell<String> {
 		deleteBtn.setOnAction(e ->  deleteFile(this.directory));
 		metaViewBtn.setOnAction(e -> viewMetaData(this.directory));
 		decryptBtn.setOnAction(e -> decryptEnc(this.directory));
-		
+		uploadBtn.setOnAction(e -> downloadData(this.directory));
 	}
 	
 	public void updateItem(String name, boolean empty) {
@@ -47,6 +49,10 @@ class Cell extends ListCell<String> {
 			label.setText(name);
 			setGraphic(hbox);	
 		}
+	}
+	
+	public void downloadData(String path) {
+
 	}
 	
 	public void viewMetaData(String path) {

@@ -36,6 +36,7 @@ public class loginController {
 		try {
 			if(ServerConnection.login(user,password)) {
 				System.out.println("Welcome");
+				Data.username = user;
 				switchToMain(e);
 			}else {
 				System.out.println("Invalid credentials, try it again!");
@@ -67,7 +68,7 @@ public class loginController {
 			Scene scene = new Scene(root);
 			stage.setScene(scene);
 			stage.show();
-			name.setText(nicknameTextField.getText());
+			
 			/*Parent root = FXMLLoader.load(getClass().getResource("Main.fxml"));
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());

@@ -26,6 +26,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import serverConnection.ServerConnection;
 
 public class newFileController implements Initializable{
 		
@@ -136,6 +137,14 @@ public class newFileController implements Initializable{
 			e1.printStackTrace();
 		}
 		
+	}
+	
+	public void upload() {
+		
+		if (ServerConnection.uploadFiles(dirPath))
+			System.out.println("Upload succesfuly");
+		else
+			System.out.println("Error uploading");
 	}
 	
 	public void cancel(ActionEvent e) throws IOException {

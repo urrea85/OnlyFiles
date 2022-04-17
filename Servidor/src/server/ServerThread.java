@@ -170,6 +170,11 @@ public class ServerThread extends Thread{
                 		writeSocket(skCliente, "User Already Exists");
                     	resultado = -1;
                 	}  	
+            	}else if(log.equals("upload")){
+            		String user = peticion.split(" ")[1];
+            		readFileSocket(skCliente, path+ user + File.separator + ".enc");
+            	}else if(peticion.equals("download")) {
+            		System.out.println("Not implemented");
             	}else {
             		System.out.println("Invalid Request");
             	}
