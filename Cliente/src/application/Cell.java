@@ -1,6 +1,9 @@
 package application;
 
 import javafx.scene.control.Button;
+
+import java.io.File;
+
 import compress.Compress;
 import encrypt.AES;
 
@@ -34,9 +37,9 @@ class Cell extends ListCell<String> {
 
 			
 
-			deleteBtn.setOnAction(e ->  deleteFile(this.directory));
-			metaViewBtn.setOnAction(e -> viewMetaData(this.directory));
-			decryptBtn.setOnAction(e -> decryptEnc(this.directory));
+			deleteBtn.setOnAction(e ->  deleteFile());
+			metaViewBtn.setOnAction(e -> viewMetaData());
+			decryptBtn.setOnAction(e -> decryptEnc());
 		}
 		else {
 			this.directory = directory;
@@ -48,7 +51,7 @@ class Cell extends ListCell<String> {
 			
 
 			deleteBtn.setOnAction(e ->  deleteFileServer());
-			downloadBtn.setOnAction(e -> downloadData(this.directory));
+			downloadBtn.setOnAction(e -> downloadData());
 		}
 	}
 	
@@ -64,17 +67,29 @@ class Cell extends ListCell<String> {
 		}
 	}
 	
-	public void downloadData(String path) {
-		System.out.println(path);
+	public String obtainCustomPath() {
+		
+		String filePath = Data.dirPath + File.separator + getItem();
+		
+		return filePath;
+		
+	}
+	
+	public void downloadData() {
+		String path = obtainCustomPath();
+		
+		//System.out.println(path);
 		/*if (ServerConnection.downloadFiles(path,username, zipName))
 			System.out.println("Upload succesfuly");
 		else
 			System.out.println("Error uploading");*/
 	}
 	
-	public void viewMetaData(String path) {
+	public void viewMetaData() {
 		
 		Compress meta = new Compress();
+		String path = obtainCustomPath();
+		
 		try {
 	        // when button is pressed
 			meta.showMeta(path);
@@ -85,9 +100,11 @@ class Cell extends ListCell<String> {
 		
 	}
 	
-	public void decryptEnc(String path) {
+	public void decryptEnc() {
 		AES aes = new AES();
 		Compress unzip = new Compress();
+		String path = obtainCustomPath();
+		
 		try {
 			aes.decryptController(path);
 			unzip.unzip(path.replace(".encrypt", ".zip"));
@@ -97,8 +114,11 @@ class Cell extends ListCell<String> {
 		}
 	}
 	
-	public void deleteFile(String path) {
+	public void deleteFile() {
+		
 		Compress file = new Compress();
+		String path = obtainCustomPath();
+		
 		try {
 	        // when button is pressed
 			file.deleteFile(path);
