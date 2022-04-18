@@ -19,6 +19,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
+import serverConnection.ServerConnection;
 
 public class fileController implements Initializable{
 	
@@ -145,6 +146,10 @@ public class fileController implements Initializable{
 	}
 	
 	public void refreshList(ActionEvent event) throws IOException {
+		
+		if(!Data.username.isEmpty())
+			Data.serverFiles = ServerConnection.listFiles(Data.username);
+
 		Parent root = FXMLLoader.load(getClass().getResource("Main.fxml"));
 
 		stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
