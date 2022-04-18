@@ -164,9 +164,9 @@ public class ServerConnection {
 		if(connected) {
 			try {
 				writeSocket(skServidor,"download " + user + " " + name);
-				readFileSocket(skServidor,path + File.separator + name +".iv");
-				readFileSocket(skServidor,path + File.separator + name +".key");
-				readFileSocket(skServidor,path + File.separator + name +".encrypt");
+				readFileSocket(skServidor,path + File.separator + name.replace(".encrypt", ".iv"));
+				readFileSocket(skServidor,path + File.separator + name.replace(".encrypt", ".key"));
+				readFileSocket(skServidor,path + File.separator + name);
 				result = true;
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
