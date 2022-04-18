@@ -26,6 +26,8 @@ public class Main {
 	private static String password;
 	private static String Klogin, Kdatos;
 	private static byte[] salt;
+	private static SecretKey KdatosHashed;
+	private static SecretKey KloginHashed;
 	
 	
 	public static String generatePassword(int length, boolean m, boolean M, boolean e, boolean n) {
@@ -179,8 +181,8 @@ public class Main {
 	public static String register(String user, String password, byte[] sal, IvParameterSpec iv) throws Exception {
 		
 		dividePassword(password);
-		SecretKey KloginHashed = hashPassword(Klogin,sal);
-		SecretKey KdatosHashed = hashPassword(Kdatos,sal);
+		KloginHashed = hashPassword(Klogin,sal);
+		KdatosHashed = hashPassword(Kdatos,sal);
 		System.out.println(AES.convertSecretKeyToString(KloginHashed));
 		System.out.println(AES.convertSecretKeyToString(KdatosHashed));
 		String KloginEncrypt = AES.encryptPassword(AES.convertSecretKeyToString(KloginHashed),KdatosHashed,iv);
@@ -193,8 +195,8 @@ public class Main {
 	public static String login(String user,String password,byte[] sal, IvParameterSpec iv) throws Exception {
 		
 		dividePassword(password);
-		SecretKey KloginHashed = hashPassword(Klogin,sal);
-		SecretKey KdatosHashed = hashPassword(Kdatos,sal);
+		KloginHashed = hashPassword(Klogin,sal);
+		KdatosHashed = hashPassword(Kdatos,sal);
 		System.out.println(AES.convertSecretKeyToString(KloginHashed));
 		System.out.println(AES.convertSecretKeyToString(KdatosHashed));
 
@@ -205,6 +207,17 @@ public class Main {
 		//System.out.println(closeConnection());
 	}
 	
+
+	
+	public static SecretKey getKdatosHashed() {
+		return KdatosHashed;
+	}
+
+
+	public static SecretKey getKloginHashed() {
+		return KloginHashed;
+	}
+
 	public static void main(String[] args) throws Exception {
 		password = generatePassword(64,true,true,true,true);
 		isGoodPasswd("Password1234@");

@@ -37,10 +37,11 @@ import javax.net.ssl.TrustManagerFactory;
 import encrypt.AES;
 import main.Main;
 
+import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.net.ssl.*;
 
-//CWy/}{=2s27NuMBa3ñ!Kf!VDVCjEjQT&kEg#o-SMWGZCAoZ[OodXU*R4Ctsp67Qz
+//uJ10>=ocd3sG&zñoJMCFiJr+u_-_s3pB+Fw[o=ffjG3+skG!sQ44cJ*dXZ{Rqm8r
 public class ServerConnection {
 	private static SSLSocket skServidor;
 	private static String host = "127.0.0.1";
@@ -48,6 +49,8 @@ public class ServerConnection {
 	private static SSLContext sc;
 	private static TrustManager[] trustManagers;
 	private static KeyManager[] keyManagers;
+	private static SecretKey kdata;
+	private static IvParameterSpec iv;
 	
 	private static String keyPath = "certs\\clientKey.jks", 
 			   			  trustPath = "certs\\clientTrustedNewCerts.jks",
@@ -73,6 +76,7 @@ public class ServerConnection {
 		}	
 	}
 	
+	
 	public static boolean login(String user, String password) throws Exception {
 		
 		boolean result = false;
@@ -83,16 +87,19 @@ public class ServerConnection {
 			try {
 				writeSocket(skServidor,"login " + user);
 				//exporting salt and iv to calculate hash
-				readFileSocket(skServidor,"salt");
+				readFileSocket(skServidor,"salt.enc");
+				AES.decryptFile("salt.enc", kdata, iv);
 				byte[] salt = Main.readByte(new File("salt"));
 				//System.out.println(sal);
 				//System.out.println(salt);
-				readFileSocket(skServidor,"Kdata.iv");
-				IvParameterSpec iv = AES.readIV("password.iv");
-				String KloginEncrypt = Main.login(user, password, salt, iv);
+				readFileSocket(skServidor,"Kdata.iv.enc");
+				AES.decryptFile("Kdata.iv.enc", kdata, iv);
+				iv = AES.readIV("Kdata.iv");
+				Main main = new Main();
+				String KloginEncrypt = main.login(user, password, salt, iv);
+				kdata = main.getKdatosHashed();
 				writeSocket(skServidor,user+" "+KloginEncrypt);
 				String valido = readSocket(skServidor, "");
-				System.out.println("Aqui estoy");
 				System.out.println(valido);
 				if(valido.equals("Valid")) { 
 					result = true;
@@ -113,8 +120,10 @@ public class ServerConnection {
 		boolean result = false;
 		byte[] salt = 	Main.generateSalt();
 		String string = new String(salt);
-		IvParameterSpec iv = AES.generateIv("password.iv");
-		String KloginEncrypt = Main.register(user, password, salt, iv);
+		iv = AES.generateIv("Kdata.iv");
+		Main main = new Main();
+		String KloginEncrypt = main.register(user, password, salt, iv);
+		kdata = main.getKdatosHashed();
 
 		boolean connected = establishConnection();			
 		if(connected) {
@@ -122,8 +131,10 @@ public class ServerConnection {
 			try {
 				writeSocket(skServidor,"register");
 				writeSocket(skServidor,user+" "+KloginEncrypt);
-				writeFileSocket(skServidor,"salt");
-				writeFileSocket(skServidor,"password.iv");
+				AES.encryptFile("salt", kdata, iv);
+				writeFileSocket(skServidor,"salt.enc");
+				AES.encryptFile("Kdata.iv", kdata, iv);
+				writeFileSocket(skServidor,"Kdata.iv.enc");
 				String valido = readSocket(skServidor, "");
 				System.out.println("Aqui estoy");
 
@@ -164,9 +175,11 @@ public class ServerConnection {
 		if(connected) {
 			try {
 				writeSocket(skServidor,"download " + user + " " + name);
-				readFileSocket(skServidor,path + File.separator + name.replace(".encrypt", ".iv"));
-				readFileSocket(skServidor,path + File.separator + name.replace(".encrypt", ".key"));
-				readFileSocket(skServidor,path + File.separator + name);
+				readFileSocket(skServidor,path + File.separator + name.replace(".encrypt", ".iv.enc"));
+				readFileSocket(skServidor,path + File.separator + name.replace(".encrypt", ".key.enc"));
+				AES.decryptFile(path + File.separator +name.replace(".encrypt", ".iv.enc"), kdata, iv);
+				AES.decryptFile(path + File.separator +name.replace(".encrypt", ".key.enc"), kdata, iv);
+				readBigFileSocket(skServidor,path + File.separator + name);
 				result = true;
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -185,9 +198,11 @@ public class ServerConnection {
 			try {
 				//Falta enviar iv y key encriptados con Kdata
 				writeSocket(skServidor,"upload " + user + " " + name);
-				writeFileSocket(skServidor,path + File.separator + name +".iv");
-				writeFileSocket(skServidor,path + File.separator + name +".key");
-				writeFileSocket(skServidor,path + File.separator + name +".encrypt");
+				AES.encryptFile(path + File.separator + name +".iv", kdata, iv);
+				writeFileSocket(skServidor,path + File.separator + name +".iv.enc");
+				AES.encryptFile(path + File.separator + name +".key", kdata, iv);
+				writeFileSocket(skServidor,path + File.separator + name +".key.enc");
+				writeBigFileSocket(skServidor,path + File.separator + name +".encrypt");
 				result = true;
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -300,6 +315,8 @@ public class ServerConnection {
         }       
     }
 	
+	
+	//The number of bytes read without permission is as many as 16383-16=16367 bytes.
 	public static void writeFileSocket(Socket sock, String filename) throws Exception {
 		 	File MyFile = new File(filename);
 	        int FileSize = (int) MyFile.length();
@@ -336,5 +353,77 @@ public class ServerConnection {
         else System.out.println("File is corrupted. File Recieved " + file + " Byte");
         pr.println("File Recieved SUccessfully.");
         bos.close();
+        fos.close();
 	}
+	
+	public static void readBigFileSocket(Socket socket, String fileName) throws IOException {
+		//https://stackoverflow.com/questions/17285846/large-file-transfer-over-java-socket
+		int bytesRead;
+	    InputStream in;
+	    int bufferSize=0;
+
+	    try {
+	        bufferSize=socket.getReceiveBufferSize();
+	        in=socket.getInputStream();
+	        DataInputStream clientData = new DataInputStream(in);
+	        System.out.println(fileName);
+	        OutputStream output = new FileOutputStream(fileName);
+	        byte[] buffer = new byte[bufferSize];
+	        int read;
+	        while((read = clientData.read(buffer)) != -1){
+	            output.write(buffer, 0, read);
+	        }
+
+	    } catch (IOException e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+	    }
+	}
+	
+    public static void writeBigFileSocket(Socket socket, String filename) {
+        try {
+        	byte[] mybytearray = new byte[8192];
+        	File myFile = new File(filename);
+            FileInputStream fis = new FileInputStream(myFile);  
+            BufferedInputStream bis = new BufferedInputStream(fis);
+            DataInputStream dis = new DataInputStream(bis);
+            OutputStream os;
+            os = socket.getOutputStream();
+            DataOutputStream dos = new DataOutputStream(os);
+            
+            int read;
+            while((read = dis.read(mybytearray)) != -1){
+                dos.write(mybytearray, 0, read);
+            }
+
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+	/*
+	 * 		Scanner in = new Scanner(sock.getInputStream());
+    	InputStream is = sock.getInputStream();
+        PrintWriter pr = new PrintWriter(sock.getOutputStream(), true);
+        String FileName = in.nextLine();
+        int FileSize = in.nextInt();
+        FileOutputStream fos = new FileOutputStream(filename);
+        BufferedOutputStream bos = new BufferedOutputStream(fos);
+        byte[] filebyte = new byte[8192];
+        int count = 0;
+        int suma = 0;
+        while ((count = is.read(filebyte)) > 0) {
+        //int file = is.read(filebyte, 0, filebyte.length);
+        	bos.write(filebyte, 0, count);
+        	suma += count;
+        }
+         
+        System.out.println("Incoming File: " + FileName);
+        System.out.println("Size: " + FileSize + "Byte");
+        if(FileSize == suma)System.out.println("File is verified");
+        else System.out.println("File is corrupted. File Recieved " + count + " Byte");
+        pr.println("File Recieved SUccessfully.");
+        bos.close();
+        fos.close();
+	 */
 }

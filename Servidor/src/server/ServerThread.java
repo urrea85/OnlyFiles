@@ -164,8 +164,8 @@ public class ServerThread extends Thread{
             	if(log.equals("login")) {
             		System.out.println("Logging...");
             		String user = peticion.split(" ")[1];
-            		writeFileSocket(skCliente,path+ user + File.separator + "salt");
-            		writeFileSocket(skCliente,path+ user + File.separator + "Kdata.iv");
+            		writeFileSocket(skCliente,path+ user + File.separator + "salt.enc");
+            		writeFileSocket(skCliente,path+ user + File.separator + "Kdata.iv.enc");
                 	String login = readSocket(skCliente, "");
                 	System.out.println(login);
                 	if(validUser(login)) {
@@ -182,8 +182,8 @@ public class ServerThread extends Thread{
                 	if(!isNewUser(register)) {
                 		//writeSocket(skCliente, "Creating new user");
                 		newUser(register);
-                		readFileSocket(skCliente, path + register.split(" ")[0] + File.separator + "salt");
-                		readFileSocket(skCliente, path + register.split(" ")[0] + File.separator + "Kdata.iv");
+                		readFileSocket(skCliente, path + register.split(" ")[0] + File.separator + "salt.enc");
+                		readFileSocket(skCliente, path + register.split(" ")[0] + File.separator + "Kdata.iv.enc");
                 		writeSocket(skCliente, "Registered");
 
                     	resultado = -1;
@@ -195,16 +195,16 @@ public class ServerThread extends Thread{
             		System.out.println(peticion);
             		String user = peticion.split(" ")[1];
             		String name = peticion.split(" ")[2];
-            		readFileSocket(skCliente, path+ user + File.separator + name + ".iv");
-            		readFileSocket(skCliente, path+ user + File.separator + name +".key");
-            		readFileSocket(skCliente, path+ user + File.separator + name + ".encrypt");
+            		readFileSocket(skCliente, path+ user + File.separator + name + ".iv.enc");
+            		readFileSocket(skCliente, path+ user + File.separator + name +".key.enc");
+            		readBigFileSocket(skCliente, path+ user + File.separator + name + ".encrypt");
             		resultado = -1;
             	}else if(log.equals("download")) {
                		String user = peticion.split(" ")[1];
             		String name = peticion.split(" ")[2];
-            		writeFileSocket(skCliente, path+ user + File.separator + name.replace(".encrypt", ".iv"));
-            		writeFileSocket(skCliente, path+ user + File.separator + name.replace(".encrypt", ".key"));
-            		writeFileSocket(skCliente, path+ user + File.separator + name);
+            		writeFileSocket(skCliente, path+ user + File.separator + name.replace(".encrypt", ".iv.enc"));
+            		writeFileSocket(skCliente, path+ user + File.separator + name.replace(".encrypt", ".key.enc"));
+            		writeBigFileSocket(skCliente, path+ user + File.separator + name);
             		resultado = -1;
             	}else if(log.equals("list")){
             		String user = peticion.split(" ")[1];
@@ -277,6 +277,7 @@ public class ServerThread extends Thread{
         else System.out.println("File is corrupted. File Recieved " + file + " Byte");
         pr.println("File Recieved SUccessfully.");
         bos.close();
+        fos.close();
     	}catch(Exception e) {
     		e.printStackTrace();
     	}
@@ -298,9 +299,56 @@ public class ServerThread extends Thread{
 	        os.write(filebyte, 0, filebyte.length);
 	        System.out.println(in.nextLine());
 	        os.flush();
+	        bis.close();
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
     }
 
+    
+    public static void writeBigFileSocket(Socket socket, String filename) {
+        try {
+        	byte[] mybytearray = new byte[8192];
+        	File myFile = new File(filename);
+            FileInputStream fis = new FileInputStream(myFile);  
+            BufferedInputStream bis = new BufferedInputStream(fis);
+            DataInputStream dis = new DataInputStream(bis);
+            OutputStream os;
+            os = socket.getOutputStream();
+            DataOutputStream dos = new DataOutputStream(os);
+            
+            int read;
+            while((read = dis.read(mybytearray)) != -1){
+                dos.write(mybytearray, 0, read);
+            }
+
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+    
+	public static void readBigFileSocket(Socket socket, String fileName){
+		//https://stackoverflow.com/questions/17285846/large-file-transfer-over-java-socket
+		int bytesRead;
+	    InputStream in;
+	    int bufferSize=0;
+
+	    try {
+	        bufferSize=socket.getReceiveBufferSize();
+	        in=socket.getInputStream();
+	        DataInputStream clientData = new DataInputStream(in);
+	        System.out.println(fileName);
+	        OutputStream output = new FileOutputStream(fileName);
+	        byte[] buffer = new byte[bufferSize];
+	        int read;
+	        while((read = clientData.read(buffer)) != -1){
+	            output.write(buffer, 0, read);
+	        }
+
+	    } catch (IOException e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+	    }
+	}
 }

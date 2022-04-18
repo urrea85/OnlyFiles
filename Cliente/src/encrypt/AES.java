@@ -62,6 +62,23 @@ public class AES {
 		    return new String(plainText);
 		}
 	
+	public static void encryptFile(String path, SecretKey key, IvParameterSpec iv) throws Exception {
+
+		String algorithm = "AES/CBC/PKCS5Padding";
+		File inputFile = Paths.get(path).toFile();
+		File encryptedFile = new File(path + ".enc");
+		encrypt(algorithm, key, iv, inputFile, encryptedFile);
+	}
+	
+	public static void decryptFile(String path, SecretKey key, IvParameterSpec iv) throws Exception {
+
+		String algorithm = "AES/CBC/PKCS5Padding";
+		File encryptedFile = Paths.get(path).toFile();
+		File decryptedFile = new File(path.replace(".enc", ""));
+		System.out.println(encryptedFile.getName() + " - " + decryptedFile.getName());
+		decrypt(algorithm, key, iv, encryptedFile, decryptedFile);
+	}
+	
 	public void encryptController(String zipPath) throws Exception{
 		SecretKey key = generateKey(128); 
 

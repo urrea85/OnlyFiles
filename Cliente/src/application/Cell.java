@@ -86,18 +86,19 @@ class Cell extends ListCell<String> {
 		System.out.println(Data.auxPath);
 		String local ="";
 		String fileName="";
-		
-		if(Data.auxPath=="") {
+		String separator = Pattern.quote(File.separator);
+		String[] paths = path.split(separator);
+		fileName = paths[paths.length-1];
+		local = path.replace(fileName, "");
+
+		if(local.equals(File.separator)) {
 			System.out.println("Selecciona el directorio local");
 		}else {
-			String separator = Pattern.quote(File.separator);
-			String[] paths = path.split(separator);
-			fileName = paths[paths.length-1];
-			local = path.replace(fileName, "");
+			//local = path.replace(fileName, "");
 			if (ServerConnection.downloadFiles(local, username, fileName))
 				System.out.println("Upload succesfuly");
 			else
-				System.out.println("Error uploading");	
+				System.out.println("Error uploading");
 		}
 	}
 	
