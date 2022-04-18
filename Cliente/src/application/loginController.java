@@ -21,9 +21,6 @@ public class loginController {
 	@FXML
 	private TextField passwordTextField;
 	
-	@FXML
-    private Label name;
-	
 	private Stage stage;
 	private Scene scene;
 	private Parent root;

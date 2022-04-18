@@ -202,9 +202,9 @@ public class ServerThread extends Thread{
             	}else if(log.equals("download")) {
                		String user = peticion.split(" ")[1];
             		String name = peticion.split(" ")[2];
-            		writeFileSocket(skCliente, path+ user + File.separator + name + ".iv");
-            		writeFileSocket(skCliente, path+ user + File.separator + name +".key");
-            		writeFileSocket(skCliente, path+ user + File.separator + name + ".encrypt");
+            		writeFileSocket(skCliente, path+ user + File.separator + name.replace(".encrypt", ".iv"));
+            		writeFileSocket(skCliente, path+ user + File.separator + name.replace(".encrypt", ".key"));
+            		writeFileSocket(skCliente, path+ user + File.separator + name);
             		resultado = -1;
             	}else if(log.equals("list")){
             		String user = peticion.split(" ")[1];

@@ -34,6 +34,7 @@ public class fileController implements Initializable{
 	@FXML
 	private Label localInfoLabel;
 		
+
 	private Stage stage;
 	private Scene scene;
 	private Parent root;

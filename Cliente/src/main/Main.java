@@ -27,6 +27,7 @@ public class Main {
 	private static String Klogin, Kdatos;
 	private static byte[] salt;
 	
+	
 	public static String generatePassword(int length, boolean m, boolean M, boolean e, boolean n) {
 		String mayus, minus, especiales, numeros, total="", resultado="";
 		minus ="abcdefghijklmnñopqrstuvwxyz";

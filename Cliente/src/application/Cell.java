@@ -1,8 +1,10 @@
 package application;
 
+import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 
 import java.io.File;
+import java.util.regex.Pattern;
 
 import compress.Compress;
 import encrypt.AES;
@@ -18,6 +20,7 @@ class Cell extends ListCell<String> {
 	
 	private String directory;
 	private String name;
+	private String aux;
 	
 	HBox hbox = new HBox();
 	Button metaViewBtn = new Button("View Metadata");
@@ -32,6 +35,7 @@ class Cell extends ListCell<String> {
 		
 		if(local) {
 			this.directory = directory;
+			Data.auxPath = directory;
 			hbox.getChildren().addAll(label,pane,metaViewBtn,decryptBtn,deleteBtn);
 			hbox.setHgrow(pane, Priority.ALWAYS);
 
@@ -44,7 +48,6 @@ class Cell extends ListCell<String> {
 		else {
 			this.directory = directory;
 			this.name = directory;
-			System.out.println("asignando "  + this.name);
 			hbox.getChildren().addAll(label,pane,downloadBtn,deleteBtn);
 			hbox.setHgrow(pane, Priority.ALWAYS);
 
@@ -77,12 +80,25 @@ class Cell extends ListCell<String> {
 	
 	public void downloadData() {
 		String path = obtainCustomPath();
+		String username = Data.username;
+		System.out.println(path);
+		System.out.println(username);
+		System.out.println(Data.auxPath);
+		String local ="";
+		String fileName="";
 		
-		//System.out.println(path);
-		/*if (ServerConnection.downloadFiles(path,username, zipName))
-			System.out.println("Upload succesfuly");
-		else
-			System.out.println("Error uploading");*/
+		if(Data.auxPath=="") {
+			System.out.println("Selecciona el directorio local");
+		}else {
+			String separator = Pattern.quote(File.separator);
+			String[] paths = path.split(separator);
+			fileName = paths[paths.length-1];
+			local = path.replace(fileName, "");
+			if (ServerConnection.downloadFiles(local, username, fileName))
+				System.out.println("Upload succesfuly");
+			else
+				System.out.println("Error uploading");	
+		}
 	}
 	
 	public void viewMetaData() {

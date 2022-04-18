@@ -10,4 +10,6 @@ public class Data {
 	
 	public static String serverFiles="";
 	
+	public static String auxPath = "";
+	
 }
