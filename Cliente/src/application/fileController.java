@@ -34,6 +34,9 @@ public class fileController implements Initializable{
 	
 	@FXML
 	private Label localInfoLabel;
+	
+	@FXML
+	private Label sessionInfoLabel;
 		
 
 	private Stage stage;
@@ -97,8 +100,11 @@ public class fileController implements Initializable{
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
 		
+		sessionInfoLabel.setText(" Welcome " + Data.username);
+		
 		if(Data.dirPath == "") {
 			localInfoLabel.setText("Select a folder");
+			
 			System.out.println(dirPath);
 		}
 		else {
