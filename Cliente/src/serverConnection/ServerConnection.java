@@ -35,6 +35,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
 import encrypt.AES;
+import encrypt.PubPrivKey;
 import main.Main;
 
 import javax.crypto.SecretKey;
@@ -82,22 +83,25 @@ public class ServerConnection {
 		boolean result = false;
 		 	Main.generateSalt();
 
+		
 		boolean connected = establishConnection();			
 		if(connected) {
 			try {
 				writeSocket(skServidor,"login " + user);
-				//exporting salt and iv to calculate hash
-				readFileSocket(skServidor,"salt.enc");
-				AES.decryptFile("salt.enc", kdata, iv);
-				byte[] salt = Main.readByte(new File("salt"));
 				//System.out.println(sal);
 				//System.out.println(salt);
-				readFileSocket(skServidor,"Kdata.iv.enc");
-				AES.decryptFile("Kdata.iv.enc", kdata, iv);
+				readFileSocket(skServidor,"Kdata.iv");
+				//AES.decryptFile("Kdata.iv.enc", kdata, iv);
 				iv = AES.readIV("Kdata.iv");
+				//exporting salt and iv to calculate hash
+				readFileSocket(skServidor,"salt");
+				byte[] salt = Main.readByte(new File("salt"));
+				readFileSocket(skServidor,"public.key");
+				readFileSocket(skServidor,"private.key.enc");
 				Main main = new Main();
 				String KloginEncrypt = main.login(user, password, salt, iv);
 				kdata = main.getKdatosHashed();
+				AES.decryptFile("private.key.enc", kdata, iv);
 				writeSocket(skServidor,user+" "+KloginEncrypt);
 				String valido = readSocket(skServidor, "");
 				System.out.println(valido);
@@ -123,6 +127,10 @@ public class ServerConnection {
 		iv = AES.generateIv("Kdata.iv");
 		Main main = new Main();
 		String KloginEncrypt = main.register(user, password, salt, iv);
+		PubPrivKey par = new PubPrivKey();
+		par.generateKeyPar();
+		par.SaveKeyPair();
+		par.LoadKeyPair();
 		kdata = main.getKdatosHashed();
 
 		boolean connected = establishConnection();			
@@ -131,10 +139,11 @@ public class ServerConnection {
 			try {
 				writeSocket(skServidor,"register");
 				writeSocket(skServidor,user+" "+KloginEncrypt);
-				AES.encryptFile("salt", kdata, iv);
-				writeFileSocket(skServidor,"salt.enc");
-				AES.encryptFile("Kdata.iv", kdata, iv);
-				writeFileSocket(skServidor,"Kdata.iv.enc");
+				writeFileSocket(skServidor,"salt");
+				writeFileSocket(skServidor,"Kdata.iv");
+				writeFileSocket(skServidor,"public.key");
+				AES.encryptFile("private.key",kdata,iv);
+				writeFileSocket(skServidor,"private.key.enc");
 				String valido = readSocket(skServidor, "");
 				System.out.println("Aqui estoy");
 

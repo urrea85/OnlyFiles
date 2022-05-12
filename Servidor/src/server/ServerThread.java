@@ -164,8 +164,10 @@ public class ServerThread extends Thread{
             	if(log.equals("login")) {
             		System.out.println("Logging...");
             		String user = peticion.split(" ")[1];
-            		writeFileSocket(skCliente,path+ user + File.separator + "salt.enc");
-            		writeFileSocket(skCliente,path+ user + File.separator + "Kdata.iv.enc");
+            		writeFileSocket(skCliente,path+ user + File.separator + "kdata.iv");
+            		writeFileSocket(skCliente,path+ user + File.separator + "salt");
+            		writeFileSocket(skCliente,path+ user + File.separator + "public.key");
+            		writeFileSocket(skCliente,path+ user + File.separator + "private.key.enc");
                 	String login = readSocket(skCliente, "");
                 	System.out.println(login);
                 	if(validUser(login)) {
@@ -182,8 +184,10 @@ public class ServerThread extends Thread{
                 	if(!isNewUser(register)) {
                 		//writeSocket(skCliente, "Creating new user");
                 		newUser(register);
-                		readFileSocket(skCliente, path + register.split(" ")[0] + File.separator + "salt.enc");
-                		readFileSocket(skCliente, path + register.split(" ")[0] + File.separator + "Kdata.iv.enc");
+                		readFileSocket(skCliente, path + register.split(" ")[0] + File.separator + "salt");
+                		readFileSocket(skCliente, path + register.split(" ")[0] + File.separator + "Kdata.iv");
+                		readFileSocket(skCliente, path + register.split(" ")[0] + File.separator + "public.key");
+                		readFileSocket(skCliente, path + register.split(" ")[0] + File.separator + "private.key.enc");
                 		writeSocket(skCliente, "Registered");
 
                     	resultado = -1;
