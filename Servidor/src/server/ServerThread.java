@@ -151,6 +151,27 @@ public class ServerThread extends Thread{
 		return files;
 	}
 	
+public static String usersPub(String user) {
+		
+		String files ="";
+		
+		File dir = new File(path);
+		String[] ficheros = dir.list();
+		
+		if (ficheros == null)
+			  System.out.println("No hay usuarios");
+		else { 
+		  for (int x=0;x<ficheros.length;x++) {
+		    if(!ficheros[x].equals(user)) {
+			    files += ficheros[x] + " ";
+		    }
+		  }
+		}
+		System.out.println("Estos son los usuarios: " + files);
+		
+		return files;
+	}
+	
     @Override
     public void run() {
         int resultado = 0;
@@ -214,6 +235,18 @@ public class ServerThread extends Thread{
             		String user = peticion.split(" ")[1];
             		String files = userFiles(user);//funcion para pasar string de nombre zips
             		writeSocket(skCliente,files);
+            		resultado = -1;
+            	}else if(log.equals("listUsers")) {
+            		String user = peticion.split(" ")[1];
+            		String users = usersPub(user);
+            		writeSocket(skCliente,users);
+            		resultado = -1;
+            	}else if(log.equals("share")) {
+            		String user = peticion.split(" ")[1];
+            		String userReal = peticion.split(" ")[2];
+            		String name = peticion.split(" ")[3];
+            		writeFileSocket(skCliente,path+ user + File.separator + "public.key");
+            		readFileSocket(skCliente,path+ user + File.separator + userReal + File.separator + name+".key.pub");
             		resultado = -1;
             	}else {
             		System.out.println("Invalid Request");

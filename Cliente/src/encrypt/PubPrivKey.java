@@ -10,6 +10,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -87,6 +90,39 @@ public class PubPrivKey {
 		return decipheredText;
 	}
 	
+	public static byte[] encryptShared(boolean isPublic, String data, String path) throws Exception{
+		
+		File filePublicKey = new File(path);
+		FileInputStream fis = new FileInputStream(path);
+		byte[] encodedPublicKey = new byte[(int) filePublicKey.length()];
+		fis.read(encodedPublicKey);
+		fis.close();
+		KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+		X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(
+				encodedPublicKey);
+		PublicKey publicKeyShared = keyFactory.generatePublic(publicKeySpec);
+		
+		
+		
+		String algorithm = "RSA/ECB/PKCS1Padding";
+		Cipher cipher = Cipher.getInstance(algorithm);
+		if(isPublic)
+			cipher.init(Cipher.ENCRYPT_MODE, publicKeyShared);
+		else
+			cipher.init(Cipher.ENCRYPT_MODE, privateKey);
+		  
+		//Adding data to the cipher
+		byte[] input = data.getBytes();	  
+		cipher.update(input);
+		  
+		//encrypting the data
+		byte[] cipherText = cipher.doFinal();	 
+	
+		//System.out.println(new String(cipherText, "UTF8"));
+		
+		return cipherText;
+	}
+	
 	
 	public static void SaveKeyPair() throws IOException {
 
@@ -133,13 +169,38 @@ public class PubPrivKey {
 		
 	}
 	
+	public static void saveBytes(byte[] bytes,String path) throws Exception{
+		 try (FileOutputStream fos = new FileOutputStream(path)) {
+		      fos.write(bytes);
+		      //fos.close // no need, try-with-resources auto close
+		  }
+	}
 	
+	public static byte[] readBytes(String path) throws Exception{
+		File file = new File(path);
+		FileInputStream fileInputStream = null;
+		byte[] bFile = new byte[(int) file.length()];
+
+	   //Read bytes with InputStream
+	   fileInputStream = new FileInputStream(file);
+	   fileInputStream.read(bFile);
+	   fileInputStream.close();
+
+	   return bFile;
+
+	}
 
 	public static void main(String[] args) {
 		generateKeyPar();
 		try {
 			byte[] cipherText = encrypt(true, "holabbquetal");
 			byte[] decipheredText = decrypt(false, cipherText);
+			
+			saveBytes(cipherText,"prueba.txt");
+			byte[] res = readBytes("prueba.txt");
+			byte[] res2 = decrypt(false, res);
+			System.out.println(new String(res2));
+			
 			byte[] cipherText2 = encrypt(true,"onichanwuwu");
 			System.out.println(new String(decrypt(false,cipherText2)));
 			SaveKeyPair();
