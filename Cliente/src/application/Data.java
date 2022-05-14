@@ -12,4 +12,8 @@ public class Data {
 	
 	public static String auxPath = "";
 	
+	public static String fileToShareName = "";
+	
+	public static String auxUsers = "Pepe Eduardo DIABLO demonio Chamo";
+	
 }

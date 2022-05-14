@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="586.0" style="-fx-background-color: #87aae0;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.shareFileController">
+   <children>
+      <Label layoutX="42.0" layoutY="31.0" prefHeight="71.0" prefWidth="145.0" text="Share " textFill="WHITE">
+         <font>
+            <Font size="46.0" />
+         </font>
+      </Label>
+      <Label fx:id="fileNameLabel" layoutX="181.0" layoutY="31.0" prefHeight="71.0" prefWidth="386.0" textFill="WHITE">
+         <font>
+            <Font size="46.0" />
+         </font>
+      </Label>
+      <ListView fx:id="userList" layoutX="42.0" layoutY="133.0" prefHeight="373.0" prefWidth="370.0" />
+      <Label layoutX="42.0" layoutY="102.0" prefHeight="31.0" prefWidth="378.0" text="Select the users you want to share the file:" textFill="WHITE">
+         <font>
+            <Font size="19.0" />
+         </font>
+      </Label>
+      <Button layoutX="428.0" layoutY="133.0" mnemonicParsing="false" onAction="#shareFile" prefHeight="46.0" prefWidth="146.0" text="Share" />
+      <Button layoutX="428.0" layoutY="191.0" mnemonicParsing="false" onAction="#cancelShare" prefHeight="46.0" prefWidth="146.0" text="Cancel" />
+      <Label layoutX="42.0" layoutY="507.0" prefHeight="31.0" prefWidth="378.0" text="To select multiple users, press CTRL and click" textFill="WHITE">
+         <font>
+            <Font size="19.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>

@@ -139,7 +139,7 @@ public class fileController implements Initializable{
 		updateListView(dirPath);
 						
 	}
-	
+		
 	public void switchToNewFile(ActionEvent event) throws IOException {
 		
 		Parent root = FXMLLoader.load(getClass().getResource("NewFile.fxml"));
@@ -150,7 +150,7 @@ public class fileController implements Initializable{
 		stage.show();
 		
 	}
-	
+		
 	public void refreshList(ActionEvent event) throws IOException {
 		
 		if(!Data.username.isEmpty())

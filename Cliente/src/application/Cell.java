@@ -1,9 +1,15 @@
 package application;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.regex.Pattern;
 
 import compress.Compress;
@@ -14,6 +20,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.stage.Stage;
 import serverConnection.ServerConnection;
 
 class Cell extends ListCell<String> {
@@ -22,9 +29,14 @@ class Cell extends ListCell<String> {
 	private String name;
 	private String aux;
 	
+	private Stage stage;
+	private Scene scene;
+	private Parent root;
+	
 	HBox hbox = new HBox();
 	Button metaViewBtn = new Button("View Metadata");
 	Button downloadBtn = new Button("Download");
+	Button shareBtn = new Button("Share");
 	Button decryptBtn = new Button("Decrypt");
 	Button deleteBtn = new Button("Delete");
 	Label label = new Label("");
@@ -48,13 +60,18 @@ class Cell extends ListCell<String> {
 		else {
 			this.directory = directory;
 			this.name = directory;
-			hbox.getChildren().addAll(label,pane,downloadBtn,deleteBtn);
+			hbox.getChildren().addAll(label,pane,downloadBtn,shareBtn,deleteBtn);
 			hbox.setHgrow(pane, Priority.ALWAYS);
-
-			
 
 			deleteBtn.setOnAction(e ->  deleteFileServer());
 			downloadBtn.setOnAction(e -> downloadData());
+			shareBtn.setOnAction(e -> {
+				try {
+					shareFileServer(e);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			});
 		}
 	}
 	
@@ -144,6 +161,18 @@ class Cell extends ListCell<String> {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public void shareFileServer(ActionEvent e) throws IOException {
+		
+		Data.fileToShareName = getItem();
+		
+		Parent root = FXMLLoader.load(getClass().getResource("ShareFile.fxml"));
+
+		stage = (Stage) ((Node)e.getSource()).getScene().getWindow();
+		Scene scene = new Scene(root);
+		stage.setScene(scene);
+		stage.show();
 	}
 	
 	public void deleteFileServer() {
