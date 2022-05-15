@@ -1,6 +1,7 @@
 package server;
 
 import java.io.BufferedInputStream;
+
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -25,6 +26,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Scanner;
 import java.util.stream.Stream;
+
 
 public class ServerThread extends Thread{
 	@SuppressWarnings("FieldMayBeFinal")
@@ -151,6 +153,7 @@ public class ServerThread extends Thread{
 		return files;
 	}
 	
+	
 public static String usersPub(String user) {
 		
 		String files ="";
@@ -171,6 +174,52 @@ public static String usersPub(String user) {
 		
 		return files;
 	}
+
+
+public static String userSharedFiles(String ruta) {
+	
+	String files ="";
+	
+	File dir = new File(path+ruta);
+	String[] ficheros = dir.list();
+	
+	if (ficheros == null)
+		  System.out.println("No hay ficheros en el directorio especificado");
+	else { 
+	  for (int x=0;x<ficheros.length;x++) {
+		  files += ficheros[x].replace(".key.pub", "") + " ";
+	  }
+	}
+	System.out.println("Estos son los ficheros: " + files);
+	
+	return files;
+}
+
+public static String infoShared(String user) {
+	
+	String files ="";
+	
+	File dir = new File(path+user+File.separator);
+	String[] ficheros = dir.list();
+	
+	if (ficheros == null)
+		  System.out.println("No hay usuarios");
+	else { 
+	  for (int x = 0; x < ficheros.length ; x++) {
+		  Path path2 = Paths.get(path+user+File.separator+ficheros[x]);
+		  if(Files.isDirectory(path2)) {
+			  String result = userSharedFiles(user+File.separator+ficheros[x]);
+			  String[] remoteFiles = result.split(" ");		
+				for(String file: remoteFiles) {
+					files += ficheros[x] + ":" + file + " ";
+				}
+		  }
+	  }
+	}
+	System.out.println("Contenido de la carpeta: " + files);
+	
+	return files;
+}
 	
     @Override
     public void run() {
@@ -246,7 +295,13 @@ public static String usersPub(String user) {
             		String userReal = peticion.split(" ")[2];
             		String name = peticion.split(" ")[3];
             		writeFileSocket(skCliente,path+ user + File.separator + "public.key");
+            		new File(path + user + File.separator+  userReal).mkdirs();
             		readFileSocket(skCliente,path+ user + File.separator + userReal + File.separator + name+".key.pub");
+            		resultado = -1;
+            	}else if(log.equals("listShared")) {
+            		String user = peticion.split(" ")[1];
+            		String result = infoShared(user);
+            		writeSocket(skCliente,result);
             		resultado = -1;
             	}else {
             		System.out.println("Invalid Request");

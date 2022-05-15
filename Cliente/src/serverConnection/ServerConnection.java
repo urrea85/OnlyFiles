@@ -193,16 +193,31 @@ public class ServerConnection {
 		return result;
 	}
 	
+	public static String listShared(String user) {
+		String result = "";
+		boolean connected = establishConnection();			
+		if(connected) {
+			try {
+				writeSocket(skServidor,"listShared " + user);
+				result = readSocket(skServidor, "");
+				System.out.println(result);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
+	
 	public static void shareZip(String path, String user, String toUser, String name) {
 		boolean result = false;
-		System.out.println(path);
 		boolean connected = establishConnection();			
 		if(connected) {
 			try {
 				writeSocket(skServidor,"share " + toUser + " " + user + " " + name);
-				readFileSocket(skServidor,path + File.separator + toUser + ".public.key");
+				readFileSocket(skServidor,toUser + ".public.key");
 				PubPrivKey pub = new PubPrivKey();
-				byte[] kdataEncrypted = pub.encryptShared(true, AES.convertSecretKeyToString(kdata), path + File.separator + toUser + ".public.key");
+				byte[] kdataEncrypted = pub.encryptShared(true, AES.convertSecretKeyToString(kdata),toUser + ".public.key");
 				pub.saveBytes(kdataEncrypted, "tempkdata.key");
 				writeFileSocket(skServidor,"tempkdata.key");
 			} catch (Exception e) {

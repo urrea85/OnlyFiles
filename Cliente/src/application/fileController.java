@@ -119,8 +119,6 @@ public class fileController implements Initializable{
 			System.out.println(dirPath);
 		}
 		else {
-			serverInfoLabel.setText("");
-			
 			updateServerView(Data.serverFiles);
 		}
 		

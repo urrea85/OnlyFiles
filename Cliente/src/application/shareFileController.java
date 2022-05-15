@@ -15,6 +15,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.stage.Stage;
+import serverConnection.ServerConnection;
 
 public class shareFileController implements Initializable{
 	
@@ -49,7 +50,7 @@ public class shareFileController implements Initializable{
 		
 		//Aqui llamas a la funcion para obtener el string de nombres desde el server
 		//Y quitas esta linea
-		rawUsers = Data.auxUsers;
+		rawUsers = ServerConnection.listUsers(Data.username);
 		
 		updateUsersList(rawUsers);
 		
@@ -65,7 +66,7 @@ public class shareFileController implements Initializable{
 		for(String user : userList.getSelectionModel().getSelectedItems()) {
 			
 			rawSelectedUsers = rawSelectedUsers + user + " ";
-			
+			ServerConnection.shareZip(Data.dirPath, Data.username, user, Data.fileToShareName);			
 		}
 		
 		rawSelectedUsers = rawSelectedUsers.substring(0,rawSelectedUsers.length()-1);
