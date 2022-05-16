@@ -217,9 +217,53 @@ public class ServerConnection {
 				writeSocket(skServidor,"share " + toUser + " " + user + " " + name);
 				readFileSocket(skServidor,toUser + ".public.key");
 				PubPrivKey pub = new PubPrivKey();
-				byte[] kdataEncrypted = pub.encryptShared(true, AES.convertSecretKeyToString(kdata),toUser + ".public.key");
+				//se pasa el kfile no el kdata fumao, entonces debes descargar el kfile y el iv
+				readFileSocket(skServidor,path + File.separator + name.replace(".encrypt",".iv.enc"));
+				readFileSocket(skServidor,path + File.separator + name.replace(".encrypt",".key.enc"));
+				AES.decryptFile(path + File.separator + name.replace(".encrypt",".iv.enc"), kdata, iv);
+				AES.decryptFile(path + File.separator + name.replace(".encrypt",".key.enc"), kdata, iv);
+				
+				//IvParameterSpec ivFile = AES.readIV(path + File.separator + name.replace(".encrypt",".iv"));
+				SecretKey sharedKey = AES.ReadKey(path + File.separator + name.replace(".encrypt",".key"));
+				byte[] kdataEncrypted = pub.encryptShared(true, AES.convertSecretKeyToString(sharedKey),toUser + ".public.key");
 				pub.saveBytes(kdataEncrypted, "tempkdata.key");
 				writeFileSocket(skServidor,"tempkdata.key");
+				IvParameterSpec ivFinal = AES.readIV(path+File.separator + name.replace(".encrypt", ".iv"));
+				byte[] ivEncrypted = pub.encryptShared(true, ivFinal.toString(), toUser + ".public.key");
+				pub.saveBytes(ivEncrypted, "temp.iv");
+				writeFileSocket(skServidor, "temp.iv");
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public static void downloadSharedFiles(String path, String user, String toUser, String name) {
+		System.out.println(path);
+		boolean connected = establishConnection();			
+		if(connected) {
+			try {
+				writeSocket(skServidor,"downloadShared " + toUser + " " + user + " " + name);
+				readFileSocket(skServidor,path + File.separator + name.replace(".encrypt", ".key.pub"));
+				readFileSocket(skServidor,path + File.separator + name.replace(".encrypt", ".iv.pub"));
+				readBigFileSocket(skServidor,path + File.separator + name);
+				
+				PubPrivKey pub = new PubPrivKey();
+				pub.LoadKeyPair();
+				byte[] kfileEncrypt = pub.readBytes(path + File.separator + name.replace(".encrypt", ".key.pub"));
+				byte[] kfileB = pub.decrypt(false, kfileEncrypt);
+				pub.saveBytes(kfileB, path + File.separator + name.replace(".encrypt", ".key"));
+				//SecretKey kfile = AES.ReadKey(path + File.separator + name.replace(".encrypt", ".key"));
+				
+				byte[] ivEncrypt = pub.readBytes(path + File.separator + name.replace(".encrypt", ".iv.pub"));
+				byte[] iv = pub.decrypt(false, ivEncrypt);
+				pub.saveBytes(iv, path + File.separator + name.replace(".encrypt", ".iv"));
+				//IvParameterSpec ivFinal = AES.readIV(path + File.separator + name.replace(".encrypt", ".iv"));
+				
+				//AES.ReadKey(name);
+				//AES.decryptFile(path + File.separator +name, kfile, ivFinal);
+				
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

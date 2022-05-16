@@ -295,13 +295,24 @@ public static String infoShared(String user) {
             		String userReal = peticion.split(" ")[2];
             		String name = peticion.split(" ")[3];
             		writeFileSocket(skCliente,path+ user + File.separator + "public.key");
+            		writeFileSocket(skCliente,path+ userReal + File.separator + name.replace(".encrypt", ".iv.enc"));
+            		writeFileSocket(skCliente,path+ userReal + File.separator + name.replace(".encrypt", ".key.enc"));
             		new File(path + user + File.separator+  userReal).mkdirs();
             		readFileSocket(skCliente,path+ user + File.separator + userReal + File.separator + name+".key.pub");
+            		readFileSocket(skCliente,path+ user + File.separator + userReal + File.separator + name+".iv.pub");
             		resultado = -1;
             	}else if(log.equals("listShared")) {
             		String user = peticion.split(" ")[1];
             		String result = infoShared(user);
             		writeSocket(skCliente,result);
+            		resultado = -1;
+            	}else if(log.equals("downloadShared")) {
+            		String user = peticion.split(" ")[1];
+            		String userReal = peticion.split(" ")[2];
+            		String name = peticion.split(" ")[3];
+            		writeFileSocket(skCliente,path+ userReal + File.separator + user + File.separator + name +".key.pub");
+            		writeFileSocket(skCliente,path+ userReal + File.separator + user + File.separator + name +".iv.pub");
+            		writeBigFileSocket(skCliente,path+ user + File.separator + name);
             		resultado = -1;
             	}else {
             		System.out.println("Invalid Request");

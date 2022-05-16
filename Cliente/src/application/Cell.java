@@ -127,6 +127,7 @@ class Cell extends ListCell<String> {
 		try {
 	        // when button is pressed
 			meta.showMeta(path);
+		
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
