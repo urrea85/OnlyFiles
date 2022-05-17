@@ -25,6 +25,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Scanner;
+import java.util.logging.Level;
 import java.util.stream.Stream;
 
 
@@ -217,7 +218,6 @@ public static String infoShared(String user) {
 	  }
 	}
 	System.out.println("Contenido de la carpeta: " + files);
-	
 	return files;
 }
 	
@@ -225,6 +225,8 @@ public static String infoShared(String user) {
     public void run() {
         int resultado = 0;
         String cadena = "";
+        
+        Server.LOGGER.log(Level.INFO,"Atendiendo cliente");
         
         try {
             while (resultado != -1) {
@@ -242,10 +244,12 @@ public static String infoShared(String user) {
                 	System.out.println(login);
                 	if(validUser(login)) {
                 		writeSocket(skCliente, "Valid");
+                		Server.LOGGER.log(Level.INFO,"Usuario " + user + " inicio de sesion correcto");
                     	resultado = -1;
                 	}else {
                 		writeSocket(skCliente, "Invalid");
-                    	resultado = -1;
+                		Server.LOGGER.log(Level.INFO,"Usuario " + user + " inicio de sesion incorrecto");
+                		resultado = -1;
                 	}  	
             	}else if(peticion.equals("register")) {
             		System.out.println("Registering new user...");
@@ -259,10 +263,11 @@ public static String infoShared(String user) {
                 		readFileSocket(skCliente, path + register.split(" ")[0] + File.separator + "public.key");
                 		readFileSocket(skCliente, path + register.split(" ")[0] + File.separator + "private.key.enc");
                 		writeSocket(skCliente, "Registered");
-
+                		Server.LOGGER.log(Level.INFO,"Usuario " + register + " registrado correctamente");
                     	resultado = -1;
                 	}else {
                 		writeSocket(skCliente, "User Already Exists");
+                		Server.LOGGER.log(Level.INFO,"Usuario " + register + " ya registrado");
                     	resultado = -1;
                 	}  	
             	}else if(log.equals("upload")){
@@ -272,6 +277,7 @@ public static String infoShared(String user) {
             		readFileSocket(skCliente, path+ user + File.separator + name + ".iv.enc");
             		readFileSocket(skCliente, path+ user + File.separator + name +".key.enc");
             		readBigFileSocket(skCliente, path+ user + File.separator + name + ".encrypt");
+            		Server.LOGGER.log(Level.INFO,"Usuario " + user + " sube correctamente " + name);
             		resultado = -1;
             	}else if(log.equals("download")) {
                		String user = peticion.split(" ")[1];
@@ -279,6 +285,7 @@ public static String infoShared(String user) {
             		writeFileSocket(skCliente, path+ user + File.separator + name.replace(".encrypt", ".iv.enc"));
             		writeFileSocket(skCliente, path+ user + File.separator + name.replace(".encrypt", ".key.enc"));
             		writeBigFileSocket(skCliente, path+ user + File.separator + name);
+            		Server.LOGGER.log(Level.INFO,"Usuario " + user + " descarga correctamente " + name);
             		resultado = -1;
             	}else if(log.equals("list")){
             		String user = peticion.split(" ")[1];
@@ -300,6 +307,7 @@ public static String infoShared(String user) {
             		new File(path + user + File.separator+  userReal).mkdirs();
             		readFileSocket(skCliente,path+ user + File.separator + userReal + File.separator + name+".key.pub");
             		readFileSocket(skCliente,path+ user + File.separator + userReal + File.separator + name+".iv.pub");
+            		Server.LOGGER.log(Level.INFO,"Usuario " + user + " comparte " + name + " con " + userReal);
             		resultado = -1;
             	}else if(log.equals("listShared")) {
             		String user = peticion.split(" ")[1];
@@ -313,18 +321,22 @@ public static String infoShared(String user) {
             		writeFileSocket(skCliente,path+ userReal + File.separator + user + File.separator + name +".key.pub");
             		writeFileSocket(skCliente,path+ userReal + File.separator + user + File.separator + name +".iv.pub");
             		writeBigFileSocket(skCliente,path+ user + File.separator + name);
+            		Server.LOGGER.log(Level.INFO,"Usuario " + userReal + " descarga " + name + " de " + user);
             		resultado = -1;
             	}else {
-            		System.out.println("Invalid Request");
+            		//System.out.println("Invalid Request");
+            		Server.LOGGER.log(Level.WARNING, "Peticion invalida");
             		resultado = -1;
             	}
             	
             }
-            System.out.println("Cliente desconectado");
+            //System.out.println("Cliente desconectado");
+            Server.LOGGER.log(Level.INFO,"Cliente desconectado");
             skCliente.close();
-        } catch (IOException e) {
-            System.out.println("Error en run");
-            System.out.println("Error: " + e.toString());
+        } catch (Exception e) {
+            //System.out.println("Error en run");
+            //System.out.println("Error: " + e.toString());
+        	Server.LOGGER.log(Level.SEVERE,"Error: " + e.toString());
         }
     }
     
@@ -376,8 +388,13 @@ public static String infoShared(String user) {
          
         System.out.println("Incoming File: " + FileName);
         System.out.println("Size: " + FileSize + "Byte");
-        if(FileSize == file)System.out.println("File is verified");
-        else System.out.println("File is corrupted. File Recieved " + file + " Byte");
+        if(FileSize == file) {
+        	System.out.println("File is verified");
+        }
+        else {
+        	//System.out.println("File is corrupted. File Recieved " + file + " Byte");
+    		Server.LOGGER.log(Level.WARNING,"Archivo " + file + " corrupto");
+        }
         pr.println("File Recieved SUccessfully.");
         bos.close();
         fos.close();
