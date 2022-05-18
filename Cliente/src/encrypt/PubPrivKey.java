@@ -16,6 +16,7 @@ import java.nio.file.Paths;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -90,6 +91,19 @@ public class PubPrivKey {
 		return decipheredText;
 	}
 	
+	public static byte[] decryptSigned(byte[] cipherText, PublicKey pub) throws Exception{
+		//"RSA/ECB/PKCS1Padding"
+		String algorithm = "RSA/ECB/PKCS1Padding";
+		Cipher cipher = Cipher.getInstance(algorithm);
+
+		cipher.init(Cipher.DECRYPT_MODE, pub);
+		
+		byte[] decipheredText = cipher.doFinal(cipherText);
+		//System.out.println(new String(decipheredText));
+		
+		return decipheredText;
+	}
+	
 	public static byte[] encryptShared(boolean isPublic, String data, String path) throws Exception{
 		
 		File filePublicKey = new File(path);
@@ -121,6 +135,23 @@ public class PubPrivKey {
 		//System.out.println(new String(cipherText, "UTF8"));
 		
 		return cipherText;
+	}
+	
+
+	public static PublicKey fileToPub(String path) throws Exception{
+		
+		File filePublicKey = new File(path);
+		FileInputStream fis = new FileInputStream(path);
+		byte[] encodedPublicKey = new byte[(int) filePublicKey.length()];
+		fis.read(encodedPublicKey);
+		fis.close();
+		KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+		X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(
+				encodedPublicKey);
+		PublicKey publicKeyShared = keyFactory.generatePublic(publicKeySpec);
+		
+	
+		return publicKeyShared;
 	}
 	
 	
@@ -189,6 +220,51 @@ public class PubPrivKey {
 	   return bFile;
 
 	}
+	
+	public static String getFileChecksum(File file) throws Exception {
+	  //Get file input stream for reading the file content
+	  FileInputStream fis = new FileInputStream(file);
+	  MessageDigest digest = MessageDigest.getInstance("SHA-256");
+	  
+	  //Create byte array to read data in chunks
+	  byte[] byteArray = new byte[1024];
+	  int bytesCount = 0; 
+	    
+	  //Read file data and update in message digest
+	  while ((bytesCount = fis.read(byteArray)) != -1) {
+	    digest.update(byteArray, 0, bytesCount);
+	  };
+	   
+	  //close the stream; We don't need it now.
+	  fis.close();
+	   
+	  //Get the hash's bytes
+	  byte[] bytes = digest.digest();
+	   
+	  //This bytes[] has bytes in decimal format;
+	  //Convert it to hexadecimal format
+	  StringBuilder sb = new StringBuilder();
+	  for(int i=0; i< bytes.length ;i++)
+	  {
+	    sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+	  }
+	   
+	  //return complete hash
+	   return sb.toString();
+	}
+	
+	public boolean compareChecksum(String path, byte[] checksumServer) throws Exception {
+		boolean result = false;
+		
+		File file = new File(path);
+		String checksumZip = getFileChecksum(file);
+		
+		if(checksumZip == new String(checksumServer))
+			result = true;
+		
+		return result;
+	}
+	
 
 	public static void main(String[] args) {
 		generateKeyPar();
@@ -211,10 +287,24 @@ public class PubPrivKey {
 			byte[] cipherText3 = encrypt(false,"mainnoquelavasaliar");
 			System.out.println(new String(decrypt(true,cipherText3)));
 
+			/*File file = new File("C:\\Users\\josea\\OneDrive\\Escritorio\\filesToZip\\obeso.encrypt");
+			String checksum = getFileChecksum(file);
+			byte[] kfileB = encrypt(false, checksum);
+			saveBytes(kfileB, "hola.priv");
+			byte[] saved = readBytes("hola.priv");
+			byte[] result = decrypt(true, saved);
+			System.out.println("CHECKSUM");
+			System.out.println(kfileB);
+			System.out.println(saved);
+			System.out.println(checksum);
+			System.out.println(new String(result));
+*/
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
+
 	
 }

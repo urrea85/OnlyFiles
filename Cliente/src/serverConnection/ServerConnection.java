@@ -22,6 +22,7 @@ import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.util.Scanner;
@@ -209,6 +210,7 @@ public class ServerConnection {
 		return result;
 	}
 	
+	
 	public static void shareZip(String path, String user, String toUser, String name) {
 		boolean result = false;
 		boolean connected = establishConnection();			
@@ -292,19 +294,48 @@ public class ServerConnection {
 		return result;
 	}
 	
-	public static boolean uploadFiles(String path, String user, String name) {
+	public static boolean signature(String path, String user, String name) {
+		boolean result = false;
+		System.out.println(path);
+		boolean connected = establishConnection();			
+		if(connected) {
+			try {
+				writeSocket(skServidor,"signature " + user + " " + name);
+				readFileSocket(skServidor,path + File.separator + name.replace(".encrypt", ".checksum.priv"));
+				readFileSocket(skServidor,path + File.separator + user +".pub");
+				PubPrivKey pub = new PubPrivKey();
+				byte[] checksumEncrypted = pub.readBytes(path + File.separator + name.replace(".encrypt", ".checksum.priv"));
+				PublicKey pubk = pub.fileToPub(path + File.separator + user +".pub");
+				byte[] checksum = pub.decryptSigned(checksumEncrypted, pubk);
+				result = pub.compareChecksum(path + File.separator + name, checksum);
+			
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
+	
+	public static boolean uploadFiles(String path, String user, String name, String checksum) {
 		
 		boolean result = false;
 		System.out.println(path);
 		boolean connected = establishConnection();			
 		if(connected) {
 			try {
+				PubPrivKey pub = new PubPrivKey();
+				pub.LoadKeyPair();
+				byte[] kfileB = pub.encrypt(false, checksum);
+				pub.saveBytes(kfileB, path + File.separator + name + ".checksum.priv");
+				
 				//Falta enviar iv y key encriptados con Kdata
 				writeSocket(skServidor,"upload " + user + " " + name);
 				AES.encryptFile(path + File.separator + name +".iv", kdata, iv);
 				writeFileSocket(skServidor,path + File.separator + name +".iv.enc");
 				AES.encryptFile(path + File.separator + name +".key", kdata, iv);
 				writeFileSocket(skServidor,path + File.separator + name +".key.enc");
+				writeFileSocket(skServidor, path + File.separator + name +".checksum.priv");
 				writeBigFileSocket(skServidor,path + File.separator + name +".encrypt");
 				result = true;
 			} catch (Exception e) {

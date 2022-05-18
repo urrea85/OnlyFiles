@@ -14,6 +14,7 @@ import org.json.simple.JSONObject;
 
 import compress.Compress;
 import encrypt.AES;
+import encrypt.PubPrivKey;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -126,8 +127,11 @@ public class newFileController implements Initializable{
 		
 		try {
 			compress.zip(paths, zipName);
+		
 			aes.encryptController(zipName);
-			upload(fileName);
+			File file = new File(dirPath + File.separator + fileName + ".encrypt");
+			String shaChecksum = PubPrivKey.getFileChecksum(file);
+			upload(fileName,shaChecksum);
 			Parent root = FXMLLoader.load(getClass().getResource("Main.fxml"));
 
 			stage = (Stage) ((Node)e.getSource()).getScene().getWindow();
@@ -141,9 +145,9 @@ public class newFileController implements Initializable{
 		
 	}
 	
-	public void upload(String zipName) {
+	public void upload(String zipName,String checksum) {
 		
-		if (ServerConnection.uploadFiles(dirPath,username, zipName))
+		if (ServerConnection.uploadFiles(dirPath,username, zipName, checksum))
 			System.out.println("Upload succesfuly");
 		else
 			System.out.println("Error uploading");

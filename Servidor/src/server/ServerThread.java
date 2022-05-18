@@ -271,6 +271,7 @@ public static String infoShared(String user) {
             		String name = peticion.split(" ")[2];
             		readFileSocket(skCliente, path+ user + File.separator + name + ".iv.enc");
             		readFileSocket(skCliente, path+ user + File.separator + name +".key.enc");
+            		readFileSocket(skCliente, path+ user + File.separator + name +".checksum.priv");
             		readBigFileSocket(skCliente, path+ user + File.separator + name + ".encrypt");
             		resultado = -1;
             	}else if(log.equals("download")) {
@@ -305,6 +306,12 @@ public static String infoShared(String user) {
             		String user = peticion.split(" ")[1];
             		String result = infoShared(user);
             		writeSocket(skCliente,result);
+            		resultado = -1;
+            	}else if(log.equals("signature")) {
+            		String user = peticion.split(" ")[1];
+            		String name = peticion.split(" ")[2];
+            		writeFileSocket(skCliente,path+ user + File.separator + name.replace(".encrypt", ".checksum.priv"));
+            		writeFileSocket(skCliente,path+ user + File.separator + "public.key");
             		resultado = -1;
             	}else if(log.equals("downloadShared")) {
             		String user = peticion.split(" ")[1];
