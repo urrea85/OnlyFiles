@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+//import java.lang.System.Logger;
 import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -15,6 +16,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
+import java.util.logging.*;
 
 import javax.net.ssl.*;
 
@@ -25,12 +27,39 @@ public class Server {
 	private static TrustManager[] trustManagers;
 	private static KeyManager[] keyManagers;
 	
+	public static final Logger LOGGER = Logger.getLogger("Server");
+	
 	public static void main(String[] args) {
 		File fichero = new File ("/src/fichero.txt");
         
         boolean exit = false;
         int opc = 0;
         
+        Handler fileHandler = null;
+        Formatter simpleFormatter = null;
+       
+		try {
+			fileHandler = new FileHandler("server.log",true);
+		} catch (SecurityException | IOException e1) {
+			/*try {
+				fileHandler = new FileHandler("./server.log");
+			} catch (SecurityException | IOException e) {
+				e.printStackTrace();
+			}*/
+			e1.printStackTrace();
+		}
+        
+    	try {
+			LOGGER.addHandler(fileHandler);
+			fileHandler.setLevel(Level.ALL);
+			LOGGER.setLevel(Level.ALL);
+			simpleFormatter = new SimpleFormatter();
+			fileHandler.setFormatter(simpleFormatter);
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		}
+        
+       
         while(exit == false){
             try {
                 System.out.println(
@@ -97,27 +126,30 @@ public class Server {
 
 			SSLServerSocketFactory ssf = sc.getServerSocketFactory();
 			ServerSocket serverSocket = ssf.createServerSocket(port);
-			System.out.println("Socket iniciado, escuchando puerto: " + port);
+			//System.out.println("Socket iniciado, escuchando puerto: " + port);	
+			LOGGER.log(Level.INFO,"Socket iniciado, escuchando puerto: " + port);
 			
             for(;;){
                 Socket skServer = serverSocket.accept();
                 ServerThread t = new ServerThread(skServer);
                 t.start();
-            }
-            
+            }            
         } catch (FileNotFoundException e){
-        	System.out.println("No se encuentran los almacenes de certificados");
+        	//System.out.println("No se encuentran los almacenes de certificados");
         	System.out.println("Error: " + e.toString());
+        	LOGGER.log(Level.SEVERE, "No se encuentran los almacenes de certificados ("+ e.toString() +")");
 		} catch(BindException e) {
 			int oport = port;
 			port = port + 1;
-			System.out.println("El puerto " + oport + " está en uso, en el próximo intento se usará el puerto: " + port);
-			
+			//System.out.println("El puerto " + oport + " está en uso, en el próximo intento se usará el puerto: " + port);
+			LOGGER.log(Level.WARNING,"El puerto " + oport + " está en uso, en el próximo intento se usará el puerto: " + port);
 		} catch (GeneralSecurityException e) {
-        	System.out.println("No se puede acceder a los certificados");	
-        	System.out.println("Error: " + e.toString());
+        	//System.out.println("No se puede acceder a los certificados");	
+        	//System.out.println("Error: " + e.toString());
+        	LOGGER.log(Level.SEVERE, "No se puede acceder a los certificados (" + e.toString() + ")");
 		} catch (IOException e) {
-            System.out.println("Error: " + e.toString());
+            //System.out.println("Error: " + e.toString());
+			LOGGER.log(Level.SEVERE, "Error: " + e.toString());
         }
 	}
 }
