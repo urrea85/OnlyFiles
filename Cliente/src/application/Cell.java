@@ -35,6 +35,7 @@ class Cell extends ListCell<String> {
 	
 	HBox hbox = new HBox();
 	Button metaViewBtn = new Button("View Metadata");
+	Button signCheckBtn = new Button("Check Signature");
 	Button downloadBtn = new Button("Download");
 	Button shareBtn = new Button("Share");
 	Button decryptBtn = new Button("Decrypt");
@@ -51,8 +52,6 @@ class Cell extends ListCell<String> {
 			hbox.getChildren().addAll(label,pane,metaViewBtn,decryptBtn,deleteBtn);
 			hbox.setHgrow(pane, Priority.ALWAYS);
 
-			
-
 			deleteBtn.setOnAction(e ->  deleteFile());
 			metaViewBtn.setOnAction(e -> viewMetaData());
 			decryptBtn.setOnAction(e -> decryptEnc());
@@ -60,9 +59,9 @@ class Cell extends ListCell<String> {
 		else {
 			this.directory = directory;
 			this.name = directory;
-			hbox.getChildren().addAll(label,pane,downloadBtn,shareBtn,deleteBtn);
+			hbox.getChildren().addAll(label,pane,downloadBtn,signCheckBtn,shareBtn);
 			hbox.setHgrow(pane, Priority.ALWAYS);
-
+			
 			deleteBtn.setOnAction(e ->  deleteFileServer());
 			downloadBtn.setOnAction(e -> downloadData());
 			shareBtn.setOnAction(e -> {
@@ -72,6 +71,7 @@ class Cell extends ListCell<String> {
 					e1.printStackTrace();
 				}
 			});
+			signCheckBtn.setOnAction(e -> checkSignature());
 		}
 	}
 	
@@ -87,6 +87,23 @@ class Cell extends ListCell<String> {
 		}
 	}
 	
+	public String[] sharedFileSeparator(String name) {
+
+		String[] aux = name.split("->");
+		
+		if(aux.length != 1) {
+			String[] aux2 = aux[1].split(":");
+			String[] result = {aux[0], aux2[1]};
+
+			return result;
+		}
+		else {
+			String[] result = {aux[0]};
+			return result;
+		}
+		
+	}
+	
 	public String obtainCustomPath() {
 		
 		String filePath = Data.dirPath + File.separator + getItem();
@@ -95,9 +112,17 @@ class Cell extends ListCell<String> {
 		
 	}
 	
+	public void checkSignature() {
+		
+	}
+	
 	public void downloadData() {
 		String path = obtainCustomPath();
 		String username = Data.username;
+		
+		//.lenght sera o 1 o 2 segun si es shared o no
+		String[] sharedInfo = sharedFileSeparator(getItem());
+		
 		System.out.println(path);
 		System.out.println(username);
 		System.out.println(Data.auxPath);
@@ -112,10 +137,19 @@ class Cell extends ListCell<String> {
 			System.out.println("Selecciona el directorio local");
 		}else {
 			//local = path.replace(fileName, "");
-			if (ServerConnection.downloadFiles(local, username, fileName))
-				System.out.println("Upload succesfuly");
-			else
-				System.out.println("Error uploading");
+			if(sharedInfo.length == 1) {
+				if (ServerConnection.downloadFiles(local, username, fileName))
+					System.out.println("Upload succesfuly");
+				else
+					System.out.println("Error uploading");
+			}
+			else {
+				String filename = sharedInfo[0];
+				String sharingUser = sharedInfo[1];
+				
+				
+			}
+			
 		}
 	}
 	
@@ -166,14 +200,23 @@ class Cell extends ListCell<String> {
 	
 	public void shareFileServer(ActionEvent e) throws IOException {
 		
-		Data.fileToShareName = getItem();
+		String[] sharedInfo = sharedFileSeparator(getItem());
 		
-		Parent root = FXMLLoader.load(getClass().getResource("ShareFile.fxml"));
+		if(sharedInfo.length == 1) {
+			Data.fileToShareName = getItem();
+			
+			Parent root = FXMLLoader.load(getClass().getResource("ShareFile.fxml"));
 
-		stage = (Stage) ((Node)e.getSource()).getScene().getWindow();
-		Scene scene = new Scene(root);
-		stage.setScene(scene);
-		stage.show();
+			stage = (Stage) ((Node)e.getSource()).getScene().getWindow();
+			Scene scene = new Scene(root);
+			stage.setScene(scene);
+			stage.show();
+		}
+		else {
+			//POPUP
+			System.out.println("Cannot share a file that isn't yours");
+		}
+		
 	}
 	
 	public void deleteFileServer() {

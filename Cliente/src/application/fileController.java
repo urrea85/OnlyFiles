@@ -86,13 +86,24 @@ public class fileController implements Initializable{
 		
 	}
 	
-	public void updateServerView(String files) {
+	public void updateServerView(String files, String sharedFiles) {
 		
 		String[] remoteFiles = files.split(" ");
 		
 		for(String file: remoteFiles) {
 			serverFiles.getItems().addAll(file);
 			serverFiles.setCellFactory(param -> new Cell(file, false));
+		}
+		
+		String[] remoteSharedFiles = sharedFiles.split(" ");
+		
+		
+		for(String file: remoteSharedFiles) {
+			String[] aux = file.split(":");
+			
+			String custom_name = aux[1] + "->" + "Shared by:" + aux[0];
+			serverFiles.getItems().addAll(custom_name);
+			serverFiles.setCellFactory(param -> new Cell(custom_name, false));
 		}
 		
 	}
@@ -119,7 +130,7 @@ public class fileController implements Initializable{
 			System.out.println(dirPath);
 		}
 		else {
-			updateServerView(Data.serverFiles);
+			updateServerView(Data.serverFiles, Data.serverSharedFiles);
 		}
 		
 	}

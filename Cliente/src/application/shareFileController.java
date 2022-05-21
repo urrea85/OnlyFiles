@@ -49,7 +49,6 @@ public class shareFileController implements Initializable{
 		fileNameLabel.setText(Data.fileToShareName);
 		
 		//Aqui llamas a la funcion para obtener el string de nombres desde el server
-		//Y quitas esta linea
 		rawUsers = ServerConnection.listUsers(Data.username);
 		
 		updateUsersList(rawUsers);
@@ -61,18 +60,10 @@ public class shareFileController implements Initializable{
 	
 	public void shareFile(ActionEvent e) throws IOException {
 		
-		String rawSelectedUsers = "";
-		
 		for(String user : userList.getSelectionModel().getSelectedItems()) {
 			
-			rawSelectedUsers = rawSelectedUsers + user + " ";
 			ServerConnection.shareZip(Data.dirPath, Data.username, user, Data.fileToShareName);			
 		}
-		
-		rawSelectedUsers = rawSelectedUsers.substring(0,rawSelectedUsers.length()-1);
-		
-		//Aqui llamas a tu funcion de conexion al server (quitale el sysout bro)
-		System.out.println(rawSelectedUsers);
 		
 		//Once finished, returns to the main screen
 		Parent root = FXMLLoader.load(getClass().getResource("Main.fxml"));
