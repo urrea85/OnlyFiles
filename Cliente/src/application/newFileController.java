@@ -36,13 +36,16 @@ public class newFileController implements Initializable{
 	private ListView<String> fileView;
 	
 	@FXML
+	private ListView<String> metaView;
+	
+	@FXML
 	private TextField fileNameTextField;
 	
 	@FXML
-	private TextField ownerNameTextField;
+	private TextField metaKeyTextField;
 	
 	@FXML
-	private TextField descriptionTextField;
+	private TextField metaValueTextField;
 	
 	@FXML
 	private DatePicker fileDatePicker;
@@ -57,7 +60,7 @@ public class newFileController implements Initializable{
 	private File directory;
 	private File[] files;
 	
-	private List<List<String>> metadata;
+	private List<List<String>> metadata = new ArrayList<List<String>>();
 	
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
@@ -99,19 +102,30 @@ public class newFileController implements Initializable{
 		return filesPath;
 	}
 	
+	public void addMetaField(ActionEvent e) {
+		String metaKey = metaKeyTextField.getText();
+		String metaValue = metaValueTextField.getText();
+		
+		String metaListView = metaKey + " " + metaValue;
+		
+		metaView.getItems().add(metaListView);
+		
+		List<String> auxMeta = Arrays.asList(metaKey, metaValue);
+		
+		metadata.add(auxMeta);
+	}
+	
 	public void createNewFile(ActionEvent e) {
 				
 		String fileName = fileNameTextField.getText();
-		String ownerName = ownerNameTextField.getText();
-		String description = descriptionTextField.getText();
+		
 		LocalDate date = fileDatePicker.getValue();
 		
 		List<String> auxName = Arrays.asList("File Name", fileName);
-		List<String> auxOwner = Arrays.asList("Owner", ownerName);
-		List<String> auxDesc = Arrays.asList("Description", description);
 		List<String> auxDate = Arrays.asList("Date", date.toString());
 		
-		metadata = Arrays.asList(auxName, auxOwner, auxDesc, auxDate);
+		metadata.add(0, auxName);
+		metadata.add(auxDate);
 		
 		Compress compress = new Compress();
 		JSONObject json = compress.metadata(metadata);

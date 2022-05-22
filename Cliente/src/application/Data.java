@@ -10,12 +10,16 @@ public class Data {
 	
 	public static String serverFiles="";
 	
+	public static String metaString="";
+	
 	public static String serverSharedFiles="";
 	
 	public static String auxPath = "";
 	
 	public static String fileToShareName = "";
 	
-	public static String auxUsers = "Pepe Eduardo DIABLO demonio Chamo";
+	public static String auxUsers = "";
+	
+	public static String alertMsg = "";
 	
 }

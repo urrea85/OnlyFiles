@@ -2,7 +2,7 @@ package compress;
 
 
 import java.util.Arrays;
-
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -16,6 +16,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 
 public class Compress {
@@ -47,47 +49,64 @@ public class Compress {
 	    }
 	}
 	
-	public static void unzip(String fileZip) {
+	public static void unzip(String fileZip) throws Exception{
 		File destDir = new File(fileZip.replace(".zip",File.separator));
 
 		byte[] buffer = new byte[1024];
-		try {
+		//try {
+			
 			ZipInputStream zis = new ZipInputStream(new FileInputStream(fileZip));
 			ZipEntry zipEntry = zis.getNextEntry();
-			
-			while(zipEntry != null) {
-				File newFile = newFile(destDir, zipEntry);
-			     if (zipEntry.isDirectory()) {
-			         if (!newFile.isDirectory() && !newFile.mkdirs()) {
-			             throw new IOException("Failed to create directory " + newFile);
-			         }
-			     } else {
-			         // fix for Windows-created archives
-			         File parent = newFile.getParentFile();
-			         if (!parent.isDirectory() && !parent.mkdirs()) {
-			             throw new IOException("Failed to create directory " + parent);
-			         }
-			         
-			         // write file content
-			         FileOutputStream fos = new FileOutputStream(newFile);
-			         int len;
-			         while ((len = zis.read(buffer)) > 0) {
-			             fos.write(buffer, 0, len);
-			         }
-			         fos.close();
-			     }
+
+			if(zipEntry!= null) {
+				while(zipEntry != null) {
+					File newFile = newFile(destDir, zipEntry);
+				     if (zipEntry.isDirectory()) {
+				         if (!newFile.isDirectory() && !newFile.mkdirs()) {
+				             throw new IOException("Failed to create directory " + newFile);
+				         }
+				     } else {
+				         // fix for Windows-created archives
+				         File parent = newFile.getParentFile();
+				         if (!parent.isDirectory() && !parent.mkdirs()) {
+				             throw new IOException("Failed to create directory " + parent);
+				         }
+				         
+				         // write file content
+				         FileOutputStream fos = new FileOutputStream(newFile);
+				         int len;
+				         while ((len = zis.read(buffer)) > 0) {
+				             fos.write(buffer, 0, len);
+				         }
+				         fos.close();
+				     }
 			 zipEntry = zis.getNextEntry();
+				} 
+			} else {
+				ZipFile war = new ZipFile(fileZip); 
+				Enumeration<? extends ZipEntry> entries = war.entries(); 
+				 ZipFile zf = new ZipFile(fileZip);
+				 ZipEntry e = entries.nextElement(); 
+				 while(!e.getName().contains("meta.json")) {
+					 e = entries.nextElement();
+				 }
+				  InputStream is = zf.getInputStream(e);
+				  String separator = Pattern.quote(File.separator);
+				  String[] paths = fileZip.split(separator);
+				  String name = paths[paths.length-1];
+				  new File(fileZip.replace(".zip", File.separator)).mkdirs();
+				  Files.copy(is, Paths.get(fileZip.replace(".zip", File.separator) + name.replace("Decrypt.zip", "meta.json")));
 			}
 			
 			zis.closeEntry();
 			zis.close();
-		} catch (FileNotFoundException e) {
+		/*} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 		
 	}
 
@@ -130,8 +149,9 @@ public class Compress {
 		}
 	}
 	
-	public void showMeta(String path) throws IOException {
+	public String showMeta(String path) throws IOException {
 		JSONParser parser = new JSONParser();
+		String result = "";
 		try {
 			String filename = path.replace(".encrypt", "meta.json");
 			String separator = Pattern.quote(File.separator);
@@ -144,14 +164,16 @@ public class Compress {
 			Object obj = parser.parse(new FileReader(filename));
 			Map<String,String> map = (Map) obj;	
 			for (Map.Entry<String, String> entry : map.entrySet()) {
-			    System.out.println(entry.getKey() + "/" + entry.getValue());
+				result += entry.getKey() + "/" + entry.getValue() + "->";
+			    //System.out.println(entry.getKey() + "/" + entry.getValue());
 			}
-
 			 
 		} catch (Exception e) {
 				e.printStackTrace();
 		  
 		}
+		
+		return result;
 	}
 	
 	  public void deleteFile(String filename) { 
@@ -162,8 +184,18 @@ public class Compress {
 	      System.out.println("Failed to delete the file.");
 	    } 
 	  } 
+	  private static final byte[] BUFFER = new byte[4096 * 1024];
 
-	public static void main(String[] args) {
+	  
+	  public static void copy(InputStream input, OutputStream output) throws IOException { 
+		  int bytesRead; 
+		  while ((bytesRead = input.read(BUFFER))!= -1) { 
+			  output.write(BUFFER, 0, bytesRead); 
+		} 
+	}
+
+
+	public static void main(String[] args) throws Exception {
 
 		List<String> files = Arrays.asList("prueba.txt","imagen.jpg");
 		File zipM;
@@ -175,6 +207,9 @@ public class Compress {
 		
 		//Try to unzip into a specific path
 		File destFile = new File("C:\\Users\\josea\\OneDrive\\Escritorio\\filesToZip");
+		unzip("C:\\Users\\josea\\OneDrive\\Escritorio\\filesToZip\\holaDecrypt.zip");
+		
+
 		//unzip("compress.zip",destFile);
 }
 }
