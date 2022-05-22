@@ -128,21 +128,24 @@ public class Compress {
 		}
 	}
 	
-	public void showMeta(String path) throws IOException {
+	public String showMeta(String path) throws IOException {
 		JSONParser parser = new JSONParser();
+		String result = "";
 		try {
 			String filename = path.replace(".encrypt", "meta.json");
 			Object obj = parser.parse(new FileReader(filename));
 			Map<String,String> map = (Map) obj;	
 			for (Map.Entry<String, String> entry : map.entrySet()) {
-			    System.out.println(entry.getKey() + "/" + entry.getValue());
+				result += entry.getKey() + "/" + entry.getValue() + "->";
+			    //System.out.println(entry.getKey() + "/" + entry.getValue());
 			}
-
 			 
 		} catch (Exception e) {
 				e.printStackTrace();
 		  
 		}
+		
+		return result;
 	}
 	
 	  public void deleteFile(String filename) { 

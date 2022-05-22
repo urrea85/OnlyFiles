@@ -20,6 +20,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import serverConnection.ServerConnection;
 
@@ -71,7 +72,14 @@ class Cell extends ListCell<String> {
 					e1.printStackTrace();
 				}
 			});
-			signCheckBtn.setOnAction(e -> checkSignature());
+			signCheckBtn.setOnAction(e -> {
+				try {
+					checkSignature();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			});
 		}
 	}
 	
@@ -112,8 +120,20 @@ class Cell extends ListCell<String> {
 		
 	}
 	
-	public void checkSignature() {
+	public void checkSignature() throws IOException {
+		//Implementa aqui la logica
 		
+		//Pon aqui el mensaje que quieras
+		Data.alertMsg = "";
+		
+		//Calling to Alert Window
+		stage = new Stage();
+		root = FXMLLoader.load(getClass().getResource("AlertPopup.fxml"));
+		stage.setScene(new Scene(root));
+		stage.setTitle("Signature check");
+		stage.initModality(Modality.APPLICATION_MODAL);
+		stage.initOwner(getScene().getWindow());
+		stage.showAndWait();
 	}
 	
 	public void downloadData() {
@@ -160,7 +180,17 @@ class Cell extends ListCell<String> {
 		
 		try {
 	        // when button is pressed
-			meta.showMeta(path);
+			String rawMeta = meta.showMeta(path);
+			
+			Data.metaString = rawMeta.substring(0, rawMeta.length() -2);
+			
+			stage = new Stage();
+			root = FXMLLoader.load(getClass().getResource("MetaView.fxml"));
+			stage.setScene(new Scene(root));
+			stage.setTitle(getItem());
+			stage.initModality(Modality.APPLICATION_MODAL);
+			stage.initOwner(getScene().getWindow());
+			stage.showAndWait();
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -213,8 +243,15 @@ class Cell extends ListCell<String> {
 			stage.show();
 		}
 		else {
-			//POPUP
-			System.out.println("Cannot share a file that isn't yours");
+			Data.alertMsg = "Cannot share a file that isn't yours";
+			
+			stage = new Stage();
+			root = FXMLLoader.load(getClass().getResource("AlertPopup.fxml"));
+			stage.setScene(new Scene(root));
+			stage.setTitle("Warning");
+			stage.initModality(Modality.APPLICATION_MODAL);
+			stage.initOwner(getScene().getWindow());
+			stage.showAndWait();
 		}
 		
 	}

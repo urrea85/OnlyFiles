@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="173.0" prefWidth="515.0" style="-fx-background-color: #87aae0;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.alertController">
+   <children>
+      <Label fx:id="messageLabel" layoutX="69.0" layoutY="69.0" prefHeight="34.0" prefWidth="422.0" textFill="#efefef">
+         <font>
+            <Font size="23.0" />
+         </font>
+      </Label>
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="62.0" layoutX="43.0" layoutY="40.0" stroke="BLACK" strokeType="INSIDE" width="13.0" />
+      <Circle fill="DODGERBLUE" layoutX="50.0" layoutY="121.0" radius="11.0" stroke="BLACK" strokeType="INSIDE" />
+   </children>
+</AnchorPane>

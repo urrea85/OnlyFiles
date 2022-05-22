@@ -8,14 +8,18 @@ public class Data {
 	
 	public static String username="";
 	
-	public static String serverFiles="DIABLO.encrypt DEMONIO.encrypt";
+	public static String metaString="";
 	
-	public static String serverSharedFiles="antonio:Ubuntu.encrypt chamaquito:zipHermoso.encrypt payo:holis.encrypt";
+	public static String serverFiles="";
+	
+	public static String serverSharedFiles="";
 	
 	public static String auxPath = "";
 	
 	public static String fileToShareName = "";
 	
-	public static String auxUsers = "Pepe Eduardo DIABLO demonio Chamo";
+	public static String auxUsers = "";
+	
+	public static String alertMsg = "";
 	
 }

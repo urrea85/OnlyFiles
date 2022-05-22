@@ -33,12 +33,7 @@
       </VBox>
       <ListView fx:id="fileView" layoutX="290.0" layoutY="110.0" prefHeight="99.0" prefWidth="543.0" style="-fx-background-color: #bbd0f2;" />
       <Button layoutX="290.0" layoutY="75.0" mnemonicParsing="false" onAction="#selectFiles" prefHeight="26.0" prefWidth="167.0" text="Select files" />
-      <Label layoutX="290.0" layoutY="214.0" prefHeight="32.0" prefWidth="150.0" text="Owner Name" textFill="WHITE">
-         <font>
-            <Font size="22.0" />
-         </font>
-      </Label>
-      <Label layoutX="290.0" layoutY="288.0" text="Description:" textFill="#fafafa">
+      <Label layoutX="290.0" layoutY="214.0" prefHeight="32.0" prefWidth="167.0" text="Additional info:" textFill="WHITE">
          <font>
             <Font size="22.0" />
          </font>
@@ -54,13 +49,25 @@
          </font>
       </Label>
       <DatePicker fx:id="fileDatePicker" layoutX="374.0" layoutY="419.0" prefHeight="26.0" prefWidth="462.0" />
-      <TextField fx:id="ownerNameTextField" layoutX="290.0" layoutY="262.0" prefHeight="18.0" prefWidth="543.0" />
-      <TextField fx:id="descriptionTextField" layoutX="290.0" layoutY="320.0" prefHeight="87.0" prefWidth="543.0" />
+      <TextField fx:id="metaKeyTextField" layoutX="290.0" layoutY="283.0" prefHeight="26.0" prefWidth="201.0" />
       <TextField fx:id="fileNameTextField" layoutX="473.0" layoutY="75.0" prefHeight="26.0" prefWidth="362.0" />
       <Label layoutX="762.0" layoutY="49.0" prefHeight="22.0" prefWidth="73.0" text="File Name" textFill="WHITE">
          <font>
             <Font size="15.0" />
          </font>
       </Label>
+      <TextField fx:id="metaValueTextField" layoutX="504.0" layoutY="283.0" prefHeight="26.0" prefWidth="261.0" />
+      <Label layoutX="289.0" layoutY="246.0" prefHeight="32.0" prefWidth="167.0" text="Key:" textFill="WHITE">
+         <font>
+            <Font size="22.0" />
+         </font>
+      </Label>
+      <Label layoutX="504.0" layoutY="246.0" prefHeight="32.0" prefWidth="167.0" text="Value:" textFill="WHITE">
+         <font>
+            <Font size="21.0" />
+         </font>
+      </Label>
+      <Button layoutX="773.0" layoutY="284.0" mnemonicParsing="false" onAction="#addMetaField" prefHeight="26.0" prefWidth="66.0" text="Add" />
+      <ListView fx:id="metaView" layoutX="290.0" layoutY="317.0" prefHeight="90.0" prefWidth="543.0" />
    </children>
 </AnchorPane>
