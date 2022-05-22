@@ -29,6 +29,52 @@ public class Server {
 	
 	public static final Logger LOGGER = Logger.getLogger("Server");
 	
+	private static String keyPath = "src\\certs\\serverKey.jks", 
+			   trustPath = "src\\certs\\serverTrustedNewCerts.jks",
+			   pass = "servpass";
+	
+	
+	private static void setSetKeyPath() {
+		System.out.println("Introduzca la ruta:");
+		InputStreamReader isr = new InputStreamReader(System.in);
+        BufferedReader br = new BufferedReader (isr);
+        String ruta = "";
+        try {
+			ruta = br.readLine();
+			keyPath = ruta;
+		} catch (IOException e) {
+			System.out.println("Ha ocurrido un error, intentelo de nuevo");
+		}
+	};
+	
+	private static void setSetTrustPath() {
+		System.out.println("Introduzca la ruta:");
+		InputStreamReader isr = new InputStreamReader(System.in);
+        BufferedReader br = new BufferedReader (isr);
+        String ruta = "";
+        try {
+			ruta = br.readLine();
+			trustPath = ruta;
+		} catch (IOException e) {
+			System.out.println("Ha ocurrido un error, intentelo de nuevo");
+		}
+	};
+	
+	private static void setSetCertPass() {
+		System.out.println("Introduzca la ruta:");
+		InputStreamReader isr = new InputStreamReader(System.in);
+        BufferedReader br = new BufferedReader (isr);
+        String ruta = "";
+        try {
+			ruta = br.readLine();
+			pass = ruta;
+		} catch (IOException e) {
+			System.out.println("Ha ocurrido un error, intentelo de nuevo");
+		}
+	};
+	
+	
+	
 	public static void main(String[] args) {
 		File fichero = new File ("/src/fichero.txt");
         
@@ -59,14 +105,17 @@ public class Server {
 			e.printStackTrace();
 		}
         
-       
         while(exit == false){
+        	System.out.println(keyPath);
+        	System.out.println(trustPath);
+        	System.out.println(pass);
             try {
                 System.out.println(
                       "[1] Iniciar Servidor\n"
-                    + "[2] (Establecer puerto de escucha)\n"
-                    + "[3] (Establecer ruta de ficheros)\n"
-                    + "[4] Cerrar");
+                    + "[2] Establecer ruta del almacen de certificados (keypath)\n"
+                    + "[3] Establecer ruta del almacen de certificados de confianza (trustpath)\n"
+                    + "[4] Establecer contraseña del almacen de certificados \n"
+                    + "[5] Cerrar");
                 InputStreamReader isr = new InputStreamReader(System.in);
                 BufferedReader br = new BufferedReader (isr);
                 opc = Integer.parseInt(br.readLine());
@@ -76,10 +125,15 @@ public class Server {
                         initServer();
                         break;
                     case 2:
+                    	setSetKeyPath();
                         break;
                     case 3:
+                    	setSetTrustPath();
+                    	break;
+                    case 4:
+                    	setSetCertPass();
                         break;
-                    case 4: 
+                    case 5: 
                         exit = true;
                         System.out.print("Cerrando servidor \n");
                         break;
@@ -108,6 +162,9 @@ public class Server {
 		trustManagers = tmf.getTrustManagers();
 	}
 	
+	
+	
+	
 	private static void initServer() {
 		try {
 
@@ -116,9 +173,7 @@ public class Server {
 	        System.setProperty("javax.net.ssl.trustStore", "certs/serverTrustedCerts.jks");
 	        System.setProperty("javax.net.ssl.trustStorePassword", "servpass");*/
 			//C:\Users\alexp\OneDrive\Escritorio\Socket\Server\src\certs
-			String keyPath = "src\\certs\\serverKey.jks", 
-				   trustPath = "src\\certs\\serverTrustedNewCerts.jks",
-				   pass = "servpass";
+			
 			getCerts(keyPath, trustPath, pass);
 			
 			SSLContext sc = SSLContext.getInstance("TLS");
