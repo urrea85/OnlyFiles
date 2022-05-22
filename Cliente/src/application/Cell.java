@@ -114,6 +114,37 @@ class Cell extends ListCell<String> {
 	
 	public void checkSignature() {
 		
+		String path = obtainCustomPath();
+		String username = Data.username;
+		String local ="";
+		String fileName="";
+		String separator = Pattern.quote(File.separator);
+		String[] paths = path.split(separator);
+		fileName = paths[paths.length-1];
+		local = path.replace(fileName, "");
+		//.lenght sera o 1 o 2 segun si es shared o no
+		String[] sharedInfo = sharedFileSeparator(getItem());
+		
+		if(sharedInfo.length == 1) {
+			boolean result = ServerConnection.signature(local, username, fileName);
+			if(result) {
+				System.out.println("Firma válida");
+			}else {
+				System.out.println("Firma inválida");
+			}
+		}
+		else {
+			String filename = sharedInfo[0];
+			String sharingUser = sharedInfo[1];
+			boolean result = ServerConnection.signature(local, sharingUser, filename);
+			if(result) {
+				System.out.println("Firma válida");
+			}else {
+				System.out.println("Firma inválida");
+			}
+		}
+		
+		
 	}
 	
 	public void downloadData() {
@@ -147,7 +178,7 @@ class Cell extends ListCell<String> {
 				String filename = sharedInfo[0];
 				String sharingUser = sharedInfo[1];
 				
-				
+				ServerConnection.downloadSharedFiles(local, username, sharingUser, filename);	
 			}
 			
 		}
@@ -176,7 +207,8 @@ class Cell extends ListCell<String> {
 		
 		try {
 			aes.decryptController(path);
-			unzip.unzip(path.replace(".encrypt", ".zip"));
+			System.out.println("uwuuuuu");
+			unzip.unzip(path.replace(".encrypt", "Decrypt.zip"));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -95,15 +95,17 @@ public class fileController implements Initializable{
 			serverFiles.setCellFactory(param -> new Cell(file, false));
 		}
 		
-		String[] remoteSharedFiles = sharedFiles.split(" ");
-		
-		
-		for(String file: remoteSharedFiles) {
-			String[] aux = file.split(":");
+		if(!sharedFiles.isEmpty()) {
+			String[] remoteSharedFiles = sharedFiles.split(" ");
 			
-			String custom_name = aux[1] + "->" + "Shared by:" + aux[0];
-			serverFiles.getItems().addAll(custom_name);
-			serverFiles.setCellFactory(param -> new Cell(custom_name, false));
+			for(String file: remoteSharedFiles) {
+				
+				String[] aux = file.split(":");
+
+				String custom_name = aux[1] + "->" + "Shared by:" + aux[0];
+				serverFiles.getItems().addAll(custom_name);
+				serverFiles.setCellFactory(param -> new Cell(custom_name, false));
+			}
 		}
 		
 	}
@@ -124,7 +126,8 @@ public class fileController implements Initializable{
 			updateListView(dirPath);
 
 		}
-		
+		Data.serverFiles = ServerConnection.listFiles(Data.username);
+		Data.serverSharedFiles = ServerConnection.listShared(Data.username);
 		if(Data.serverFiles == "") {
 			serverInfoLabel.setText("No files found");
 			System.out.println(dirPath);
@@ -162,8 +165,10 @@ public class fileController implements Initializable{
 		
 	public void refreshList(ActionEvent event) throws IOException {
 		
-		if(!Data.username.isEmpty())
+		if(!Data.username.isEmpty()) {
 			Data.serverFiles = ServerConnection.listFiles(Data.username);
+			Data.serverSharedFiles = ServerConnection.listShared(Data.username);
+		}
 
 		Parent root = FXMLLoader.load(getClass().getResource("Main.fxml"));
 

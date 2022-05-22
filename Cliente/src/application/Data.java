@@ -8,9 +8,9 @@ public class Data {
 	
 	public static String username="";
 	
-	public static String serverFiles="DIABLO.encrypt DEMONIO.encrypt";
+	public static String serverFiles="";
 	
-	public static String serverSharedFiles="antonio:Ubuntu.encrypt chamaquito:zipHermoso.encrypt payo:holis.encrypt";
+	public static String serverSharedFiles="";
 	
 	public static String auxPath = "";
 	

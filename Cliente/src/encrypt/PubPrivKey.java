@@ -258,8 +258,9 @@ public class PubPrivKey {
 		
 		File file = new File(path);
 		String checksumZip = getFileChecksum(file);
-		
-		if(checksumZip == new String(checksumServer))
+		System.out.println(checksumZip);
+		System.out.println(new String(checksumServer));
+		if(checksumZip.equals( new String(checksumServer)))
 			result = true;
 		
 		return result;

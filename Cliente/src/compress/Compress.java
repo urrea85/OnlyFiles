@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.zip.*;
 
 import javax.swing.text.html.HTMLDocument.Iterator;
@@ -48,6 +49,7 @@ public class Compress {
 	
 	public static void unzip(String fileZip) {
 		File destDir = new File(fileZip.replace(".zip",File.separator));
+
 		byte[] buffer = new byte[1024];
 		try {
 			ZipInputStream zis = new ZipInputStream(new FileInputStream(fileZip));
@@ -132,6 +134,13 @@ public class Compress {
 		JSONParser parser = new JSONParser();
 		try {
 			String filename = path.replace(".encrypt", "meta.json");
+			String separator = Pattern.quote(File.separator);
+			String[] paths = path.split(separator);
+			String fileName = paths[paths.length-1];
+			String repl = "Decrypt" + File.separator + fileName.replace(".encrypt", "meta.json");
+			filename = filename.replace("meta.json", repl);
+			System.out.println("The file " +  filename);
+
 			Object obj = parser.parse(new FileReader(filename));
 			Map<String,String> map = (Map) obj;	
 			for (Map.Entry<String, String> entry : map.entrySet()) {

@@ -212,7 +212,8 @@ public static String infoShared(String user) {
 			  String result = userSharedFiles(user+File.separator+ficheros[x]);
 			  String[] remoteFiles = result.split(" ");		
 				for(String file: remoteFiles) {
-					files += ficheros[x] + ":" + file + " ";
+					if(!file.contains(".iv.pub"))
+						files += ficheros[x] + ":" + file + " ";
 				}
 		  }
 	  }
